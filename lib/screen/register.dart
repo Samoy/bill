@@ -48,7 +48,10 @@ class _RegisterPageState extends State<RegisterPage> {
           children: [
             TextFormField(
               decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.person_sharp),
+                  prefixIcon: Icon(
+                    Icons.person_sharp,
+                    size: 24,
+                  ),
                   prefixIconConstraints:
                       BoxConstraints(minWidth: 32, maxHeight: 8),
                   labelText: "输入您的用户名",
@@ -62,7 +65,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 if (value.length < 6 ||
                     value.length > 16 ||
                     !new RegExp(r"^[\dA-Za-z]{6,16}$").hasMatch(value)) {
-                  return "用户名长度应为字母和数字，且长度在6~16位之间";
+                  return "用户名应为字母和数字，且长度在6~16位之间";
                 }
                 return null;
               },
@@ -70,7 +73,10 @@ class _RegisterPageState extends State<RegisterPage> {
             TextFormField(
               obscureText: true,
               decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.lock_sharp),
+                  prefixIcon: Icon(
+                    Icons.lock_sharp,
+                    size: 24,
+                  ),
                   prefixIconConstraints:
                       BoxConstraints(minWidth: 32, maxHeight: 8),
                   labelText: "输入您的密码",
@@ -90,7 +96,10 @@ class _RegisterPageState extends State<RegisterPage> {
             TextFormField(
               obscureText: true,
               decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.lock_outline_sharp),
+                  prefixIcon: Icon(
+                    Icons.lock_outline_sharp,
+                    size: 24,
+                  ),
                   prefixIconConstraints:
                       BoxConstraints(minWidth: 32, maxHeight: 8),
                   labelText: "再次输入您的密码",
@@ -119,7 +128,10 @@ class _RegisterPageState extends State<RegisterPage> {
                 return null;
               },
               decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.phone_android),
+                  prefixIcon: Icon(
+                    Icons.phone_android,
+                    size: 24,
+                  ),
                   prefixIconConstraints:
                       BoxConstraints(minWidth: 32, maxHeight: 8),
                   labelText: "输入您的手机号",
@@ -132,7 +144,10 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             TextFormField(
               decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.person_outline_sharp),
+                  prefixIcon: Icon(
+                    Icons.person_outline_sharp,
+                    size: 24,
+                  ),
                   prefixIconConstraints:
                       BoxConstraints(minWidth: 32, maxHeight: 8),
                   labelText: "给自己起个昵称吧",

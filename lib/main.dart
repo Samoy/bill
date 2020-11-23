@@ -23,12 +23,15 @@
  */
 import 'dart:io';
 
+import 'package:bill/model/token_model.dart';
 import 'package:bill/screen/home.dart';
 import 'package:bill/screen/login.dart';
 import 'package:bill/screen/register.dart';
 import 'package:bill/screen/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -44,24 +47,27 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: '小小记账本',
-      theme: ThemeData(
-          primarySwatch: Colors.amber,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          inputDecorationTheme: InputDecorationTheme(
-              labelStyle: TextStyle(fontSize: 14),
-              contentPadding: EdgeInsets.symmetric(vertical: 16),
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.amber),
-              ))),
-      initialRoute: "/",
-      routes: {
-        "/": (_) => SplashPage(),
-        "/login": (_) => LoginPage(),
-        "/home": (_) => HomePage(),
-        "/register": (_) => RegisterPage()
-      },
-    );
+    return ChangeNotifierProvider(
+        create: (_) => TokenModel(),
+        child: MaterialApp(
+          title: '小小记账本',
+          theme: ThemeData(
+              primarySwatch: Colors.amber,
+              visualDensity: VisualDensity.adaptivePlatformDensity,
+              inputDecorationTheme: InputDecorationTheme(
+                  labelStyle: TextStyle(fontSize: 14),
+                  contentPadding: EdgeInsets.symmetric(vertical: 16),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.amber),
+                  ))),
+          initialRoute: "/",
+          builder: EasyLoading.init(),
+          routes: {
+            "/": (_) => SplashPage(),
+            "/login": (_) => LoginPage(),
+            "/home": (_) => HomePage(),
+            "/register": (_) => RegisterPage()
+          },
+        ));
   }
 }

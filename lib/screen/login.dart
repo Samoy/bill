@@ -21,7 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import 'package:bill/common/constant.dart';
+import 'package:bill/common/net_manager.dart';
+import 'package:bill/model/bean/login_bean.dart';
+import 'package:bill/model/token_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -60,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
                     if (value.length < 6 ||
                         value.length > 16 ||
                         !new RegExp(r"^[\dA-Za-z]{6,16}$").hasMatch(value)) {
-                      return "用户名长度应为字母和数字，且长度在6~16位之间";
+                      return "用户名应为字母和数字，且长度在6~16位之间";
                     }
                     return null;
                   },
@@ -145,5 +152,22 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void login() async {}
+  void login() async {
+    try {
+      EasyLoading.show(status: '请稍候...');
+      Map<String, dynamic> res = await NetManager.getInstance().post(
+          "api/v1/user/login",
+          data: {"username": _username, "password": _password});
+      LoginBean loginBean = LoginBean.fromJson(res);
+      String token = loginBean.data.token;
+      if (token != null && token.isNotEmpty) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString(kStorageToken, token);
+        Provider.of<TokenModel>(context, listen: false).setToken(token);
+        Navigator.pushReplacementNamed(context, "/home");
+      }
+    } catch (DioError) {} finally {
+      EasyLoading.dismiss();
+    }
+  }
 }

@@ -21,7 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import 'package:bill/common/constant.dart';
+import 'package:bill/model/token_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashPage extends StatefulWidget {
   @override
@@ -29,6 +34,29 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+  @override
+  void initState() {
+    super.initState();
+    initLoading();
+    fetchToken();
+  }
+
+  void initLoading() {
+    EasyLoading.instance
+      ..displayDuration = const Duration(milliseconds: 2000)
+      ..indicatorType = EasyLoadingIndicatorType.threeBounce
+      ..loadingStyle = EasyLoadingStyle.custom
+      ..indicatorSize = 20
+      ..radius = 10.0
+      ..progressColor = Colors.amber
+      ..backgroundColor = Colors.white
+      ..indicatorColor = Colors.amber
+      ..textColor = Colors.amber
+      ..maskType = EasyLoadingMaskType.black
+      ..userInteractions = true
+      ..dismissOnTap = false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,5 +69,16 @@ class _SplashPageState extends State<SplashPage> {
         ),
       ),
     );
+  }
+
+  void fetchToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString(kStorageToken);
+    if (token != null && token.isNotEmpty) {
+      Provider.of<TokenModel>(context, listen: false).setToken(token);
+      Navigator.pushReplacementNamed(context, "/home");
+    } else {
+      Navigator.pushReplacementNamed(context, "/login");
+    }
   }
 }
