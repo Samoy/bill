@@ -24,8 +24,6 @@
 
 import 'package:bill/model/bean/user_bean.dart';
 
-/// data : {"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QxMSIsInBhc3N3b3JkIjoidGVzdDExIiwiZXhwIjoxNjA4NzEzNDc4LCJpc3MiOiJiaWxsIn0.5f2D66tWHQVEuxK5JQ5jyAjwaEVyflEylqLqAbNy7nY","user":{"id":1,"created_at":"2020-11-21T11:40:52+08:00","updated_at":"2020-11-21T11:40:52+08:00","username":"test11","telephone":"18312345678","nickname":""}}
-/// message : "登录成功"
 
 class LoginBean {
   Data _data;
@@ -56,9 +54,6 @@ class LoginBean {
   }
 
 }
-
-/// token : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QxMSIsInBhc3N3b3JkIjoidGVzdDExIiwiZXhwIjoxNjA4NzEzNDc4LCJpc3MiOiJiaWxsIn0.5f2D66tWHQVEuxK5JQ5jyAjwaEVyflEylqLqAbNy7nY"
-/// user : {"id":1,"created_at":"2020-11-21T11:40:52+08:00","updated_at":"2020-11-21T11:40:52+08:00","username":"test11","telephone":"18312345678","nickname":""}
 
 class Data {
   String _token;
