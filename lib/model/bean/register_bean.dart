@@ -21,27 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import 'package:bill/model/user_model.dart';
-import 'package:bill/widget/base.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-class HomePage extends StatefulWidget {
-  @override
-  _HomePageState createState() => _HomePageState();
-}
+import 'package:bill/model/bean/user_bean.dart';
 
-class _HomePageState extends State<HomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return BaseWidget(
-      body: Center(
-        child: Consumer<UserModel>(
-          builder: (context, userModel, child) {
-            return Text(userModel.username);
-          },
-        ),
-      ),
-    );
+class RegisterBean {
+  UserBean _data;
+  String _message;
+
+  UserBean get data => _data;
+
+  String get message => _message;
+
+  RegisterBean({UserBean data, String message}) {
+    _data = data;
+    _message = message;
+  }
+
+  RegisterBean.fromJson(dynamic json) {
+    _data = json["data"] != null ? UserBean.fromJson(json["data"]) : null;
+    _message = json["message"];
+  }
+
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{};
+    if (_data != null) {
+      map["data"] = _data.toJson();
+    }
+    map["message"] = _message;
+    return map;
   }
 }

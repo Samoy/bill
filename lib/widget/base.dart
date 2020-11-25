@@ -35,14 +35,13 @@ class BaseWidget<T> extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          title??"小小记账本",
+          title ?? "小小记账本",
           style: TextStyle(fontFamily: "NotoSC-Black"),
         ),
         backgroundColor: Colors.white,
         elevation: 1,
       ),
       body: Container(
-        padding: EdgeInsets.all(20),
         child: body,
       ),
     );

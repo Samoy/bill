@@ -21,27 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import 'package:bill/model/user_model.dart';
-import 'package:bill/widget/base.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart';
 
-class HomePage extends StatefulWidget {
-  @override
-  _HomePageState createState() => _HomePageState();
-}
+class UserModel extends ChangeNotifier {
+  String _username = "";
+  String _password = "";
+  String _telephone = "";
+  String _nickname = "";
 
-class _HomePageState extends State<HomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return BaseWidget(
-      body: Center(
-        child: Consumer<UserModel>(
-          builder: (context, userModel, child) {
-            return Text(userModel.username);
-          },
-        ),
-      ),
-    );
+  String get username => _username;
+
+  String get password => _password;
+
+  String get telephone => _telephone;
+
+  String get nickname => _nickname;
+
+  void setUser(
+      {String username, String password, String telephone, String nickname}) {
+    _username = username;
+    _password = password;
+    _telephone = telephone;
+    _nickname = nickname;
+    notifyListeners();
   }
 }

@@ -25,10 +25,13 @@ import 'package:bill/common/constant.dart';
 import 'package:bill/common/net_manager.dart';
 import 'package:bill/model/bean/login_bean.dart';
 import 'package:bill/model/token_model.dart';
+import 'package:bill/model/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:dio/dio.dart';
+import 'package:toast/toast.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -36,9 +39,12 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String _username = "";
-  String _password = "";
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,41 +68,50 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 Divider(color: Colors.amber, thickness: 1),
-                TextFormField(
-                  validator: (value) {
-                    if (value.length < 6 ||
-                        value.length > 16 ||
-                        !new RegExp(r"^[\dA-Za-z]{6,16}$").hasMatch(value)) {
-                      return "用户名应为字母和数字，且长度在6~16位之间";
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                      hintText: "请输入用户名",
-                      contentPadding:
-                          EdgeInsets.only(left: 12, right: 12, bottom: 8)),
-                  onChanged: (value) {
-                    setState(() {
-                      _username = value;
-                    });
+                Consumer<UserModel>(
+                  builder: (context, userModel, child) {
+                    return TextFormField(
+                      controller: TextEditingController.fromValue(
+                          TextEditingValue(text: userModel.username)),
+                      validator: (value) {
+                        if (value.length < 6 ||
+                            value.length > 16 ||
+                            !new RegExp(r"^[\dA-Za-z]{6,16}$")
+                                .hasMatch(value)) {
+                          return "用户名应为字母和数字，且长度在6~16位之间";
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                          hintText: "请输入用户名",
+                          contentPadding:
+                              EdgeInsets.only(left: 12, right: 12, bottom: 8)),
+                      onChanged: (value) {
+                        userModel.setUser(username: value);
+                      },
+                    );
                   },
                 ),
-                TextFormField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                      hintText: "请输入密码",
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 16)),
-                  onChanged: (value) {
-                    setState(() {
-                      _password = value;
-                    });
-                  },
-                  validator: (value) {
-                    if (value.length < 6 || value.length > 16) {
-                      return "密码长度应为6~16位";
-                    }
-                    return null;
+                Consumer<UserModel>(
+                  builder: (context, userModel, child) {
+                    return TextFormField(
+                      controller: TextEditingController.fromValue(
+                          TextEditingValue(text: userModel.password)),
+                      obscureText: true,
+                      decoration: InputDecoration(
+                          hintText: "请输入密码",
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 16)),
+                      onChanged: (value) {
+                        userModel.setUser(password: value);
+                      },
+                      validator: (value) {
+                        if (value.length < 6 || value.length > 16) {
+                          return "密码长度应为6~16位";
+                        }
+                        return null;
+                      },
+                    );
                   },
                 ),
                 Container(
@@ -154,10 +169,12 @@ class _LoginPageState extends State<LoginPage> {
 
   void login() async {
     try {
+      String username = Provider.of<UserModel>(context, listen: false).username;
+      String password = Provider.of<UserModel>(context, listen: false).password;
       EasyLoading.show(status: '请稍候...');
       Map<String, dynamic> res = await NetManager.getInstance().post(
           "api/v1/user/login",
-          data: {"username": _username, "password": _password});
+          data: {"username": username, "password": password});
       LoginBean loginBean = LoginBean.fromJson(res);
       String token = loginBean.data.token;
       if (token != null && token.isNotEmpty) {
@@ -166,7 +183,9 @@ class _LoginPageState extends State<LoginPage> {
         Provider.of<TokenModel>(context, listen: false).setToken(token);
         Navigator.pushReplacementNamed(context, "/home");
       }
-    } catch (DioError) {} finally {
+    } on DioError catch (e) {
+      Toast.show(e.message, context, gravity: Toast.CENTER);
+    } finally {
       EasyLoading.dismiss();
     }
   }

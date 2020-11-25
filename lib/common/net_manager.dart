@@ -25,11 +25,12 @@
 import 'package:bill/common/constant.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class NetManager {
-  var dio = Dio();
+  var _dio = Dio();
   static NetManager _netManager;
-  final baseUrl = "http://47.244.216.182:5000/";
+  final _baseUrl = "http://172.24.33.27:5000/";
 
   static NetManager getInstance() {
     if (_netManager == null) {
@@ -39,40 +40,41 @@ class NetManager {
   }
 
   NetManager() {
-    dio.interceptors.add(InterceptorsWrapper(onRequest: (options) async {
+    _dio.interceptors.add(InterceptorsWrapper(onRequest: (options) async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      options.baseUrl = baseUrl;
+      options.baseUrl = _baseUrl;
       options.headers["token"] = prefs.getString(kStorageToken);
     }, onError: (error) {
       Map<String, dynamic> res = error.response.data;
       String errorMsg = res["message"] as String;
+      return errorMsg;
     }));
   }
 
   Future<Map<String, dynamic>> get(String path,
       {Map<String, dynamic> queryParameters}) async {
-    Response response = await dio.get(path, queryParameters: queryParameters);
+    Response response = await _dio.get(path, queryParameters: queryParameters);
     return response?.data as Map<String, dynamic>;
   }
 
   Future<Map<String, dynamic>> post(String path,
       {Map<String, dynamic> data, Map<String, dynamic> queryParameters}) async {
     Response response =
-        await dio.post(path, data: data, queryParameters: queryParameters);
+        await _dio.post(path, data: data, queryParameters: queryParameters);
     return response?.data as Map<String, dynamic>;
   }
 
   Future<Map<String, dynamic>> put(String path,
       {Map<String, dynamic> data, Map<String, dynamic> queryParameters}) async {
     Response response =
-        await dio.put(path, data: data, queryParameters: queryParameters);
+        await _dio.put(path, data: data, queryParameters: queryParameters);
     return response?.data as Map<String, dynamic>;
   }
 
   Future<Map<String, dynamic>> delete(String path,
       {Map<String, dynamic> data, Map<String, dynamic> queryParameters}) async {
     Response response =
-        await dio.delete(path, data: data, queryParameters: queryParameters);
+        await _dio.delete(path, data: data, queryParameters: queryParameters);
     return response?.data as Map<String, dynamic>;
   }
 }
