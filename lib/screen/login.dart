@@ -72,7 +72,12 @@ class _LoginPageState extends State<LoginPage> {
                   builder: (context, userModel, child) {
                     return TextFormField(
                       controller: TextEditingController.fromValue(
-                          TextEditingValue(text: userModel.username)),
+                          TextEditingValue(
+                              text: userModel.username ?? "",
+                              selection: TextSelection.fromPosition(
+                                  TextPosition(
+                                      offset: '${userModel.username ?? ""}'
+                                          .length)))),
                       validator: (value) {
                         if (value.length < 6 ||
                             value.length > 16 ||
@@ -96,7 +101,12 @@ class _LoginPageState extends State<LoginPage> {
                   builder: (context, userModel, child) {
                     return TextFormField(
                       controller: TextEditingController.fromValue(
-                          TextEditingValue(text: userModel.password)),
+                          TextEditingValue(
+                              text: userModel.password ?? "",
+                              selection: TextSelection.fromPosition(
+                                  TextPosition(
+                                      offset: '${userModel.password ?? ""}'
+                                          .length)))),
                       obscureText: true,
                       decoration: InputDecoration(
                           hintText: "请输入密码",

@@ -39,10 +39,18 @@ class UserModel extends ChangeNotifier {
 
   void setUser(
       {String username, String password, String telephone, String nickname}) {
-    _username = username;
-    _password = password;
-    _telephone = telephone;
-    _nickname = nickname;
+    if (username != null) {
+      _username = username;
+    }
+    if (password != null) {
+      _password = password;
+    }
+    if (telephone != null) {
+      _telephone = telephone;
+    }
+    if (nickname != null) {
+      _nickname = nickname;
+    }
     notifyListeners();
   }
 }

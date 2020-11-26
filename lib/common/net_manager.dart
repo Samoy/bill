@@ -25,7 +25,6 @@
 import 'package:bill/common/constant.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class NetManager {
   var _dio = Dio();
