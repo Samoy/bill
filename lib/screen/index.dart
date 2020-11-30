@@ -21,32 +21,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import 'package:bill/screen/home.dart';
+import 'package:bill/screen/mine.dart';
+import 'package:bill/screen/trend.dart';
 import 'package:flutter/material.dart';
 
-class BaseWidget<T> extends StatelessWidget {
-  const BaseWidget({Key key, this.title, this.body, this.floatingActionButton})
-      : super(key: key);
+class IndexPage extends StatefulWidget {
+  @override
+  _IndexPageState createState() => _IndexPageState();
+}
 
-  final String title;
-  final Widget body;
-  final FloatingActionButton floatingActionButton;
+class _IndexPageState extends State<IndexPage> {
+  List<_BottomItem> _navItems = [
+    _BottomItem("首页", Icon(Icons.home), HomePage()),
+    _BottomItem("趋势", Icon(Icons.bar_chart), TrendPage()),
+    _BottomItem("我的", Icon(Icons.person), MinePage())
+  ];
+  int _selectItem = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(
-          title ?? "小小记账本",
-          style: TextStyle(fontFamily: "NotoSC-Black"),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 1,
+      body: IndexedStack(
+        children: _navItems.map((e) => e.screen).toList(),
+        index: _selectItem,
       ),
-      body: Container(
-        child: body,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectItem,
+        onTap: (index) {
+          setState(() {
+            _selectItem = index;
+          });
+        },
+        items: _navItems
+            .map((_BottomItem e) =>
+            BottomNavigationBarItem(label: e.label, icon: e.icon))
+            .toList(),
       ),
-      floatingActionButton: floatingActionButton,
     );
   }
+}
+
+class _BottomItem {
+  String label;
+  Icon icon;
+  Widget screen;
+
+  _BottomItem(this.label, this.icon, this.screen);
 }

@@ -21,32 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import 'package:bill/widget/base.dart';
 import 'package:flutter/material.dart';
 
-class BaseWidget<T> extends StatelessWidget {
-  const BaseWidget({Key key, this.title, this.body, this.floatingActionButton})
-      : super(key: key);
+class TrendPage extends StatefulWidget {
+  @override
+  _TrendPageState createState() => _TrendPageState();
+}
 
-  final String title;
-  final Widget body;
-  final FloatingActionButton floatingActionButton;
-
+class _TrendPageState extends State<TrendPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(
-          title ?? "小小记账本",
-          style: TextStyle(fontFamily: "NotoSC-Black"),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 1,
-      ),
-      body: Container(
-        child: body,
-      ),
-      floatingActionButton: floatingActionButton,
+    return BaseWidget(
+      title: "趋势",
     );
   }
 }

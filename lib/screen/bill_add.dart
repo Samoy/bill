@@ -21,32 +21,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import 'package:bill/widget/base.dart';
 import 'package:flutter/material.dart';
 
-class BaseWidget<T> extends StatelessWidget {
-  const BaseWidget({Key key, this.title, this.body, this.floatingActionButton})
-      : super(key: key);
+class BillAddPage extends StatefulWidget {
+  @override
+  _BillAddPageState createState() => _BillAddPageState();
+}
 
-  final String title;
-  final Widget body;
-  final FloatingActionButton floatingActionButton;
+class _BillAddPageState extends State<BillAddPage> {
+  DateTime _selectedDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(
-          title ?? "小小记账本",
-          style: TextStyle(fontFamily: "NotoSC-Black"),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 1,
-      ),
+    return BaseWidget(
+      title: "添加账单",
       body: Container(
-        child: body,
+        child: Column(
+          children: [
+            RaisedButton(
+              onPressed: () async {
+                final DateTime picked = await showDatePicker(
+                  context: context,
+                  initialDate: _selectedDate,
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime(2100),
+                );
+                if (picked != null && picked != _selectedDate) {
+                  setState(() {
+                    _selectedDate = picked;
+                  });
+                }
+              },
+              child: Text("选择时间"),
+            )
+          ],
+        ),
       ),
-      floatingActionButton: floatingActionButton,
     );
   }
 }

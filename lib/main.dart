@@ -25,13 +25,16 @@ import 'dart:io';
 
 import 'package:bill/model/token_model.dart';
 import 'package:bill/model/user_model.dart';
+import 'package:bill/screen/bill_add.dart';
 import 'package:bill/screen/home.dart';
+import 'package:bill/screen/index.dart';
 import 'package:bill/screen/login.dart';
 import 'package:bill/screen/register.dart';
 import 'package:bill/screen/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -57,6 +60,15 @@ class MyApp extends StatelessWidget {
         ],
         child: MaterialApp(
           title: '小小记账本',
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: [
+            const Locale('zh', 'CH'),
+            const Locale('en', 'US'),
+          ],
+          locale: Locale('zh'),
           theme: ThemeData(
               primarySwatch: Colors.amber,
               visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -71,8 +83,9 @@ class MyApp extends StatelessWidget {
           routes: {
             "/": (_) => SplashPage(),
             "/login": (_) => LoginPage(),
-            "/home": (_) => HomePage(),
-            "/register": (_) => RegisterPage()
+            "/register": (_) => RegisterPage(),
+            "/index": (_) => IndexPage(),
+            "/bill_add": (_) => BillAddPage()
           },
         ));
   }

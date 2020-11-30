@@ -191,7 +191,7 @@ class _LoginPageState extends State<LoginPage> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString(kStorageToken, token);
         Provider.of<TokenModel>(context, listen: false).setToken(token);
-        Navigator.pushReplacementNamed(context, "/home");
+        Navigator.pushReplacementNamed(context, "/index");
       }
     } on DioError catch (e) {
       Toast.show(e.message, context, gravity: Toast.CENTER);

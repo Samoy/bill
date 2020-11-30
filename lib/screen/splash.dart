@@ -76,7 +76,7 @@ class _SplashPageState extends State<SplashPage> {
     String token = prefs.getString(kStorageToken);
     if (token != null && token.isNotEmpty) {
       Provider.of<TokenModel>(context, listen: false).setToken(token);
-      Navigator.pushReplacementNamed(context, "/home");
+      Navigator.pushReplacementNamed(context, "/index");
     } else {
       Navigator.pushReplacementNamed(context, "/login");
     }
