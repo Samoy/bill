@@ -21,6 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import 'package:bill/screen/bill_add.dart';
+import 'package:bill/screen/budget_add.dart';
 import 'package:bill/widget/base.dart';
 import 'package:flutter/material.dart';
 
@@ -30,7 +32,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
-  List<String> _actionItems = ["添加预算", "添加账单"];
+  List<_ActionItem> _actionItems = [
+    _ActionItem("添加预算", BudgetAddPage()),
+    _ActionItem("添加账单", BillAddPage())
+  ];
   double _bottom = 20;
   double _right = 4;
   bool _isExpand = false;
@@ -62,7 +67,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         child: Offstage(
           child: Stack(
             children: _actionItems
-                .map((String item) => AnimatedPositioned(
+                .map((_ActionItem item) => AnimatedPositioned(
                     child: Container(
                       height: 28,
                       width: 80,
@@ -76,12 +81,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       ),
                       child: FlatButton(
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        textColor: Colors.white,
                         child: Text(
-                          item,
+                          item.title,
                           style: TextStyle(fontSize: 12),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          setState(() {
+                            _isExpand = false;
+                            _bottom = 20;
+                          });
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => item.screen));
+                        },
                       ),
                     ),
                     bottom: _bottom + 40 * (_actionItems.indexOf(item)),
@@ -94,12 +107,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        foregroundColor: Colors.white,
         child: RotationTransition(
           child: Icon(Icons.add),
           turns: _animation,
         ),
         elevation: 2,
+        highlightElevation: 2,
         mini: true,
         onPressed: () {
           setState(() {
@@ -110,4 +123,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       ),
     );
   }
+}
+
+class _ActionItem {
+  String title;
+  Widget screen;
+
+  _ActionItem(this.title, this.screen);
 }

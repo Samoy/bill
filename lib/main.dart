@@ -26,7 +26,7 @@ import 'dart:io';
 import 'package:bill/model/token_model.dart';
 import 'package:bill/model/user_model.dart';
 import 'package:bill/screen/bill_add.dart';
-import 'package:bill/screen/home.dart';
+import 'package:bill/screen/budget_add.dart';
 import 'package:bill/screen/index.dart';
 import 'package:bill/screen/login.dart';
 import 'package:bill/screen/register.dart';
@@ -85,7 +85,8 @@ class MyApp extends StatelessWidget {
             "/login": (_) => LoginPage(),
             "/register": (_) => RegisterPage(),
             "/index": (_) => IndexPage(),
-            "/bill_add": (_) => BillAddPage()
+            "/bill_add": (_) => BillAddPage(),
+            "/budget_add": (_) => BudgetAddPage()
           },
         ));
   }

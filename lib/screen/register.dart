@@ -43,15 +43,17 @@ class _RegisterPageState extends State<RegisterPage> {
   String _telephone = "";
   String _nickname = "";
   final _formKey = GlobalKey<FormState>();
-
-  final double iconSize = 20;
+  final _textFieldBoxConstraints = BoxConstraints(minWidth: 32, maxHeight: 0);
+  final double _iconSize = 16;
+  final EdgeInsets _contentPadding = EdgeInsets.only(bottom: 0);
+  final double _dividerHeight = 16;
 
   @override
   Widget build(BuildContext context) {
     return BaseWidget(
       title: "注册账号",
       body: SingleChildScrollView(
-          padding: EdgeInsets.all(20),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Form(
             key: _formKey,
             child: Column(
@@ -60,11 +62,11 @@ class _RegisterPageState extends State<RegisterPage> {
                   decoration: InputDecoration(
                       prefixIcon: Icon(
                         Icons.person_sharp,
-                        size: iconSize,
+                        size: _iconSize,
                       ),
-                      prefixIconConstraints:
-                          BoxConstraints(minWidth: 32, maxHeight: 8),
-                      labelText: "输入您的用户名",
+                      prefixIconConstraints: _textFieldBoxConstraints,
+                      contentPadding: _contentPadding,
+                      labelText: "用户名",
                       alignLabelWithHint: true),
                   onChanged: (value) {
                     _username = value;
@@ -78,16 +80,20 @@ class _RegisterPageState extends State<RegisterPage> {
                     return null;
                   },
                 ),
+                SizedBox(
+                  width: double.infinity,
+                  height: _dividerHeight,
+                ),
                 TextFormField(
                   obscureText: true,
                   decoration: InputDecoration(
+                      contentPadding: _contentPadding,
                       prefixIcon: Icon(
                         Icons.lock_sharp,
-                        size: iconSize,
+                        size: _iconSize,
                       ),
-                      prefixIconConstraints:
-                          BoxConstraints(minWidth: 32, maxHeight: 8),
-                      labelText: "输入您的密码",
+                      prefixIconConstraints: _textFieldBoxConstraints,
+                      labelText: "密码",
                       alignLabelWithHint: true),
                   onChanged: (value) {
                     _password = value;
@@ -99,16 +105,20 @@ class _RegisterPageState extends State<RegisterPage> {
                     return null;
                   },
                 ),
+                SizedBox(
+                  width: double.infinity,
+                  height: _dividerHeight,
+                ),
                 TextFormField(
                   obscureText: true,
                   decoration: InputDecoration(
+                      contentPadding: _contentPadding,
                       prefixIcon: Icon(
                         Icons.lock_outline_sharp,
-                        size: iconSize,
+                        size: _iconSize,
                       ),
-                      prefixIconConstraints:
-                          BoxConstraints(minWidth: 32, maxHeight: 8),
-                      labelText: "再次输入您的密码",
+                      prefixIconConstraints: _textFieldBoxConstraints,
+                      labelText: "确认密码",
                       alignLabelWithHint: true),
                   onChanged: (value) {
                     _confirmPassword = value;
@@ -123,6 +133,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     return null;
                   },
                 ),
+                SizedBox(
+                  width: double.infinity,
+                  height: _dividerHeight,
+                ),
                 TextFormField(
                   keyboardType: TextInputType.phone,
                   validator: (value) {
@@ -132,27 +146,31 @@ class _RegisterPageState extends State<RegisterPage> {
                     return null;
                   },
                   decoration: InputDecoration(
+                      contentPadding: _contentPadding,
                       prefixIcon: Icon(
                         Icons.phone_android,
-                        size: iconSize,
+                        size: _iconSize,
                       ),
-                      prefixIconConstraints:
-                          BoxConstraints(minWidth: 32, maxHeight: 8),
-                      labelText: "输入您的手机号",
+                      prefixIconConstraints: _textFieldBoxConstraints,
+                      labelText: "手机号",
                       alignLabelWithHint: true),
                   onChanged: (value) {
                     _telephone = value;
                   },
                 ),
+                SizedBox(
+                  width: double.infinity,
+                  height: _dividerHeight,
+                ),
                 TextFormField(
                   decoration: InputDecoration(
+                      contentPadding: _contentPadding,
                       prefixIcon: Icon(
                         Icons.person_outline_sharp,
-                        size: iconSize,
+                        size: _iconSize,
                       ),
-                      prefixIconConstraints:
-                          BoxConstraints(minWidth: 32, maxHeight: 8),
-                      labelText: "给自己起个昵称吧",
+                      prefixIconConstraints: _textFieldBoxConstraints,
+                      labelText: "昵称",
                       alignLabelWithHint: true),
                   onChanged: (value) {
                     _nickname = value;

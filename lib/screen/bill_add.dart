@@ -30,34 +30,73 @@ class BillAddPage extends StatefulWidget {
 }
 
 class _BillAddPageState extends State<BillAddPage> {
+  GlobalKey _formKey = GlobalKey();
   DateTime _selectedDate = DateTime.now();
+  List<_BillItem> _items = [
+    _BillItem("名称", icon: Icons.account_balance_wallet_outlined),
+    _BillItem("时间", icon: Icons.calendar_today_outlined),
+    _BillItem("金额", icon: Icons.money_outlined),
+    _BillItem("类型", icon: Icons.category_outlined),
+    _BillItem("备注", icon: Icons.comment_outlined),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return BaseWidget(
       title: "添加账单",
-      body: Container(
-        child: Column(
-          children: [
-            RaisedButton(
-              onPressed: () async {
-                final DateTime picked = await showDatePicker(
-                  context: context,
-                  initialDate: _selectedDate,
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime(2100),
-                );
-                if (picked != null && picked != _selectedDate) {
-                  setState(() {
-                    _selectedDate = picked;
-                  });
-                }
-              },
-              child: Text("选择时间"),
-            )
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: _items
+                      .map((e) => Container(
+                            margin: EdgeInsets.only(top: 16),
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                  labelText: e.title,
+                                  alignLabelWithHint: true,
+                                  contentPadding: EdgeInsets.zero,
+                                  prefixIconConstraints: BoxConstraints(
+                                      minWidth: 32, maxHeight: 0),
+                                  prefixIcon: Icon(
+                                    e.icon,
+                                    size: 16,
+                                  )),
+                            ),
+                          ))
+                      .toList() +
+                  [
+                    Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.only(top: 16),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(3)),
+                          gradient: LinearGradient(colors: [
+                            Colors.amberAccent,
+                            Colors.amber,
+                            Colors.orange
+                          ])),
+                      child: FlatButton(
+                        textColor: Colors.white,
+                        onPressed: () {},
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        child: Text("完成添加"),
+                      ),
+                    ),
+                  ],
+            ),
+          ),
         ),
       ),
     );
   }
+}
+
+class _BillItem {
+  String title;
+  IconData icon;
+
+  _BillItem(this.title, {this.icon});
 }

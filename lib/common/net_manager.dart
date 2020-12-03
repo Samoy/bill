@@ -29,7 +29,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class NetManager {
   var _dio = Dio();
   static NetManager _netManager;
-  final _baseUrl = "http://172.24.33.27:5000/";
+  final _baseUrl = "http://172.24.33.237:5000/";
 
   static NetManager getInstance() {
     if (_netManager == null) {
