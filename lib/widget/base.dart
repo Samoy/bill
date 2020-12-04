@@ -24,18 +24,21 @@
 import 'package:flutter/material.dart';
 
 class BaseWidget<T> extends StatelessWidget {
-  const BaseWidget({Key key, this.title, this.body, this.floatingActionButton})
+  const BaseWidget(
+      {Key key, this.title, this.body, this.floatingActionButton, this.actions})
       : super(key: key);
 
   final String title;
   final Widget body;
   final FloatingActionButton floatingActionButton;
+  final List<Widget> actions;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        actions: actions,
         title: Text(
           title ?? "小小记账本",
           style: TextStyle(fontFamily: "NotoSC-Black"),

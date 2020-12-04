@@ -29,7 +29,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class NetManager {
   var _dio = Dio();
   static NetManager _netManager;
-  final _baseUrl = "http://172.24.33.237:5000/";
 
   static NetManager getInstance() {
     if (_netManager == null) {
@@ -41,7 +40,7 @@ class NetManager {
   NetManager() {
     _dio.interceptors.add(InterceptorsWrapper(onRequest: (options) async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      options.baseUrl = _baseUrl;
+      options.baseUrl = kBaseUrl;
       options.headers["token"] = prefs.getString(kStorageToken);
     }, onError: (error) {
       Map<String, dynamic> res = error.response.data;

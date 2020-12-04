@@ -23,6 +23,7 @@
  */
 import 'package:bill/widget/base.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class BillAddPage extends StatefulWidget {
   @override
@@ -30,18 +31,28 @@ class BillAddPage extends StatefulWidget {
 }
 
 class _BillAddPageState extends State<BillAddPage> {
-  GlobalKey _formKey = GlobalKey();
-  DateTime _selectedDate = DateTime.now();
   List<_BillItem> _items = [
     _BillItem("名称", icon: Icons.account_balance_wallet_outlined),
-    _BillItem("时间", icon: Icons.calendar_today_outlined),
-    _BillItem("金额", icon: Icons.money_outlined),
+    _BillItem("时间",
+        icon: Icons.calendar_today_outlined, inputType: TextInputType.datetime),
+    _BillItem("金额",
+        icon: Icons.money_outlined,
+        inputType: TextInputType.numberWithOptions(decimal: true)),
     _BillItem("类型", icon: Icons.category_outlined),
     _BillItem("备注", icon: Icons.comment_outlined),
   ];
 
+  final _formKey = GlobalKey<FormState>();
+  String _name = "";
+  DateTime _selectedDate = DateTime.now();
+  TextEditingController _dateController = TextEditingController(
+      text: DateFormat('yyyy-MM-dd').format(DateTime.now()));
+  TextEditingController _categoryController = TextEditingController();
+  String _remark = "";
+
   @override
   Widget build(BuildContext context) {
+    final requiredFields = ['名称', '金额', '类型', '时间'];
     return BaseWidget(
       title: "添加账单",
       body: SingleChildScrollView(
@@ -54,6 +65,28 @@ class _BillAddPageState extends State<BillAddPage> {
                       .map((e) => Container(
                             margin: EdgeInsets.only(top: 16),
                             child: TextFormField(
+                              validator: (value) {
+                                if (requiredFields.contains(e.title)) {
+                                  if (value.isEmpty) {
+                                    return "${e.title}不能为空";
+                                  }
+                                }
+                                if (e.title == '金额' &&
+                                    (!new RegExp(
+                                                r"^([1-9]\d{0,9}|0)(\.\d{1,2})?$")
+                                            .hasMatch(value) ||
+                                        double.tryParse(value) == null ||
+                                        double.tryParse(value) <= 0)) {
+                                  return "不合法的金额";
+                                }
+                                return null;
+                              },
+                              keyboardType: e.inputType,
+                              controller: e.title == '时间'
+                                  ? _dateController
+                                  : e.title == '类型'
+                                      ? _categoryController
+                                      : null,
                               decoration: InputDecoration(
                                   labelText: e.title,
                                   alignLabelWithHint: true,
@@ -63,7 +96,54 @@ class _BillAddPageState extends State<BillAddPage> {
                                   prefixIcon: Icon(
                                     e.icon,
                                     size: 16,
-                                  )),
+                                  ),
+                                  suffixText: e.title == '金额' ? "元" : null,
+                                  suffixIcon: requiredFields.contains(e.title)
+                                      ? Container(
+                                          margin: EdgeInsets.only(left: 8),
+                                          child: Text(
+                                            "*",
+                                            style: TextStyle(color: Colors.red),
+                                          ),
+                                        )
+                                      : null,
+                                  suffixIconConstraints: BoxConstraints(
+                                      minWidth: 16, maxHeight: 8)),
+                              onTap: e.title == '时间'
+                                  ? () async {
+                                      DateTime result = await showDatePicker(
+                                          context: context,
+                                          initialDate: _selectedDate,
+                                          firstDate: DateTime(2000, 1, 1),
+                                          lastDate: DateTime.now());
+                                      if (result != null) {
+                                        setState(() {
+                                          _selectedDate = result;
+                                        });
+                                        _dateController.text =
+                                            DateFormat('yyyy-MM-dd')
+                                                .format(_selectedDate);
+                                      }
+                                    }
+                                  : e.title == '类型'
+                                      ? () {
+                                          Navigator.pushNamed(
+                                              context, "/bill_type_list");
+                                        }
+                                      : null,
+                              readOnly: e.title == '时间' || e.title == '类型',
+                              onChanged: (value) {
+                                if ('名称' == e.title) {
+                                  setState(() {
+                                    _name = value;
+                                  });
+                                }
+                                if ('备注' == e.title) {
+                                  setState(() {
+                                    _remark = value;
+                                  });
+                                }
+                              },
                             ),
                           ))
                       .toList() +
@@ -80,7 +160,11 @@ class _BillAddPageState extends State<BillAddPage> {
                           ])),
                       child: FlatButton(
                         textColor: Colors.white,
-                        onPressed: () {},
+                        onPressed: () {
+                          if (_formKey.currentState.validate()) {
+                            addBill();
+                          }
+                        },
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         child: Text("完成添加"),
                       ),
@@ -92,11 +176,14 @@ class _BillAddPageState extends State<BillAddPage> {
       ),
     );
   }
+
+  void addBill() async {}
 }
 
 class _BillItem {
   String title;
   IconData icon;
+  TextInputType inputType;
 
-  _BillItem(this.title, {this.icon});
+  _BillItem(this.title, {this.icon, this.inputType});
 }
