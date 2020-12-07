@@ -183,7 +183,7 @@ class _LoginPageState extends State<LoginPage> {
       String password = Provider.of<UserModel>(context, listen: false).password;
       EasyLoading.show(status: '请稍候...');
       Map<String, dynamic> res = await NetManager.getInstance().post(
-          "api/v1/user/login",
+          "/api/v1/user/login",
           data: {"username": username, "password": password});
       LoginBean loginBean = LoginBean.fromJson(res);
       String token = loginBean.data.token;

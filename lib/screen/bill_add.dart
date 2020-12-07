@@ -21,9 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import 'package:bill/common/net_manager.dart';
+import 'package:bill/model/bean/bill_type_list_bean.dart';
+import 'package:bill/model/bill_type_model.dart';
 import 'package:bill/widget/base.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:dio/dio.dart';
+import 'package:toast/toast.dart';
 
 class BillAddPage extends StatefulWidget {
   @override
@@ -49,6 +56,13 @@ class _BillAddPageState extends State<BillAddPage> {
       text: DateFormat('yyyy-MM-dd').format(DateTime.now()));
   TextEditingController _categoryController = TextEditingController();
   String _remark = "";
+  double _amount = 0;
+  int _billTypeId;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -126,9 +140,20 @@ class _BillAddPageState extends State<BillAddPage> {
                                       }
                                     }
                                   : e.title == '类型'
-                                      ? () {
-                                          Navigator.pushNamed(
-                                              context, "/bill_type_list");
+                                      ? () async {
+                                          bool result =
+                                              await Navigator.pushNamed(context,
+                                                  "/bill_type_list") as bool;
+                                          if (result != null && result) {
+                                            BillType billType =
+                                                Provider.of<BillTypeModel>(
+                                                        context,
+                                                        listen: false)
+                                                    .selectBillType;
+                                            _categoryController.text =
+                                                billType.name;
+                                            _billTypeId = billType.id;
+                                          }
                                         }
                                       : null,
                               readOnly: e.title == '时间' || e.title == '类型',
@@ -141,6 +166,11 @@ class _BillAddPageState extends State<BillAddPage> {
                                 if ('备注' == e.title) {
                                   setState(() {
                                     _remark = value;
+                                  });
+                                }
+                                if ('金额' == e.title) {
+                                  setState(() {
+                                    _amount = double.tryParse(value);
                                   });
                                 }
                               },
@@ -177,7 +207,28 @@ class _BillAddPageState extends State<BillAddPage> {
     );
   }
 
-  void addBill() async {}
+  void addBill() async {
+    EasyLoading.show(status: "请稍后...");
+    try {
+      Map<String, dynamic> res =
+          await NetManager.getInstance().post("/api/v1/bill", data: {
+        "name": _name,
+        "amount": _amount,
+        "date": _dateController.text,
+        "type_id": _billTypeId,
+        "remark": _remark,
+        "income": false,
+      });
+      if (res != null) {
+        Toast.show("账单添加成功", context, gravity: Toast.CENTER);
+        Navigator.pop(context, true);
+      }
+    } on DioError catch (e) {
+      Toast.show(e.message, context, gravity: Toast.CENTER);
+    } finally {
+      EasyLoading.dismiss();
+    }
+  }
 }
 
 class _BillItem {

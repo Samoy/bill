@@ -24,8 +24,10 @@
 import 'package:bill/common/constant.dart';
 import 'package:bill/common/net_manager.dart';
 import 'package:bill/model/bean/bill_type_list_bean.dart';
+import 'package:bill/model/bill_type_model.dart';
 import 'package:bill/widget/base.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class BillTypeListPage extends StatefulWidget {
   @override
@@ -33,8 +35,6 @@ class BillTypeListPage extends StatefulWidget {
 }
 
 class _BillTypeListPageState extends State<BillTypeListPage> {
-  List<BillType> _billTypeList = [];
-
   @override
   void initState() {
     super.initState();
@@ -52,28 +52,36 @@ class _BillTypeListPageState extends State<BillTypeListPage> {
             tooltip: "添加",
           )
         ],
-        body: ListView(
-          children: _billTypeList
-              .map((item) => ListTile(
-                    dense: true,
-                    leading: Image.network(
-                      kBaseUrl + item.image,
-                      width: 24,
-                      height: 24,
-                    ),
-                    title: Text(item.name),
-                    onTap: () {},
-                  ))
-              .toList(),
+        body: Consumer<BillTypeModel>(
+          builder: (context, billTypeModel, child) {
+            return ListView(
+              children: billTypeModel.billTypeList
+                  .map((item) => ListTile(
+                        dense: true,
+                        leading: Image.network(
+                          kBaseUrl + item.image,
+                          width: 24,
+                          height: 24,
+                        ),
+                        title: Text(item.name),
+                        onTap: () {
+                          billTypeModel
+                              .select(billTypeModel.billTypeList.indexOf(item));
+                          Navigator.pop(context, true);
+                        },
+                      ))
+                  .toList(),
+            );
+          },
         ));
   }
 
+  //FIXME:这个似乎可以用FutureProvider来搞
   void fetchBillTypeList() async {
     Map<String, dynamic> res =
         await NetManager.getInstance().get("/api/v1/bill_type_list");
     BillTypeListBean billTypeListBean = BillTypeListBean.fromJson(res);
-    setState(() {
-      _billTypeList = billTypeListBean.data;
-    });
+    Provider.of<BillTypeModel>(context, listen: false)
+        .set(billTypeListBean.data);
   }
 }

@@ -214,7 +214,7 @@ class _RegisterPageState extends State<RegisterPage> {
     try {
       EasyLoading.show(status: "请稍候...");
       Map<String, dynamic> res =
-          await NetManager.getInstance().post("api/v1/user/register", data: {
+          await NetManager.getInstance().post("/api/v1/user/register", data: {
         "username": _username,
         "password": _password,
         "nickname": _nickname,

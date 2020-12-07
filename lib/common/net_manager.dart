@@ -61,7 +61,6 @@ class NetManager {
         await _dio.post(path, data: data, queryParameters: queryParameters);
     return response?.data as Map<String, dynamic>;
   }
-
   Future<Map<String, dynamic>> put(String path,
       {Map<String, dynamic> data, Map<String, dynamic> queryParameters}) async {
     Response response =
