@@ -29,6 +29,7 @@ import 'package:bill/widget/base.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+/// TODO:这个列表可以使用[SliverAnimatedList]实现增加和删除动画
 class BillTypeListPage extends StatefulWidget {
   @override
   _BillTypeListPageState createState() => _BillTypeListPageState();
@@ -76,7 +77,7 @@ class _BillTypeListPageState extends State<BillTypeListPage> {
         ));
   }
 
-  //FIXME:这个似乎可以用FutureProvider来搞
+  ///TODO:这个似乎可以用[FutureProvider]来搞
   void fetchBillTypeList() async {
     Map<String, dynamic> res =
         await NetManager.getInstance().get("/api/v1/bill_type_list");

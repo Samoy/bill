@@ -22,45 +22,16 @@
  * SOFTWARE.
  */
 
-import 'package:bill/common/net_manager.dart';
-import 'package:bill/model/bean/bill_type_list_bean.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:bill/model/bean/bill_list_bean.dart';
 import 'package:flutter/foundation.dart';
-import 'package:provider/provider.dart';
 
-class BillTypeModel extends ChangeNotifier {
-  List<BillType> _billTypeList = [];
-  BillType _selectBillType;
+class BillModel extends ChangeNotifier {
+  List<Bill> _billList = [];
 
-  BillType get selectBillType => _selectBillType;
+  List<Bill> get billList => _billList;
 
-  List<BillType> get billTypeList => _billTypeList;
-
-  void add(BillType billType) {
-    _billTypeList.add(billType);
-    notifyListeners();
-  }
-
-  void remove(BillType billType) {
-    _billTypeList.remove(billType);
-    notifyListeners();
-  }
-
-  void update(int id, BillType billType) {
-    int index = _billTypeList.indexWhere((element) => element.id == id);
-    if (index > -1) {
-      _billTypeList.replaceRange(index, index + 1, [billType]);
-      notifyListeners();
-    }
-  }
-
-  void select(int index) {
-    _selectBillType = _billTypeList.elementAt(index);
-    notifyListeners();
-  }
-
-  void set(List<BillType> billTypeList) {
-    _billTypeList = billTypeList;
+  void set(List<Bill> billList) {
+    _billList = billList;
     notifyListeners();
   }
 }

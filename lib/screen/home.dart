@@ -21,10 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import 'package:bill/common/constant.dart';
+import 'package:bill/common/net_manager.dart';
+import 'package:bill/model/bean/bill_list_bean.dart';
+import 'package:bill/model/bill_model.dart';
 import 'package:bill/screen/bill_add.dart';
 import 'package:bill/screen/budget_add.dart';
 import 'package:bill/widget/base.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -53,6 +59,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       parent: _animationController,
       curve: Curves.linear,
     );
+    fetBillList();
   }
 
   @override
@@ -63,48 +70,108 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       _animationController.animateBack(0);
     }
     return BaseWidget(
-      body: Container(
-        child: Offstage(
-          child: Stack(
-            children: _actionItems
-                .map((_ActionItem item) => AnimatedPositioned(
-                    child: Container(
-                      height: 28,
-                      width: 80,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(1.5)),
-                        gradient: LinearGradient(colors: [
-                          Colors.amberAccent,
-                          Colors.amber,
-                          Colors.orange
-                        ]),
-                      ),
-                      child: FlatButton(
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        child: Text(
-                          item.title,
-                          style: TextStyle(fontSize: 12),
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _isExpand = false;
-                            _bottom = 20;
-                          });
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => item.screen));
-                        },
-                      ),
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              GridView.count(
+                physics: ClampingScrollPhysics(),
+                childAspectRatio: 1.62,
+                shrinkWrap: true,
+                crossAxisCount: 2,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                padding: EdgeInsets.all(16),
+                children: [],
+              ),
+              Expanded(
+                  flex: 1,
+                  child: Container(
+                    child: Consumer<BillModel>(
+                      builder: (context, billModel, child) {
+                        return ListView.separated(
+                          itemBuilder: (context, index) {
+                            Bill bill = billModel.billList[index];
+                            return ListTile(
+                              title: Text(bill.name),
+                              leading: Container(
+                                width: 24,
+                                height: double.infinity,
+                                alignment: Alignment.centerLeft,
+                                child: Image.network(
+                                  kBaseUrl + bill.billType.image,
+                                ),
+                              ),
+                              onTap: () {},
+                              subtitle: Text(DateFormat('yyyy-MM-dd')
+                                  .format(DateTime.parse(bill.date))),
+                              trailing: Text(
+                                "¥${bill.amount}",
+                                style: TextStyle(
+                                    color: Colors.redAccent,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            );
+                          },
+                          itemCount: billModel.billList.length,
+                          separatorBuilder: (context, index) {
+                            return Divider(
+                              height: 0,
+                              thickness: 0.5,
+                            );
+                          },
+                        );
+                      },
                     ),
-                    bottom: _bottom + 40 * (_actionItems.indexOf(item)),
-                    curve: Curves.linearToEaseOut,
-                    right: _right,
-                    duration: Duration(milliseconds: 500)))
-                .toList(),
+                  ))
+            ],
           ),
-          offstage: !_isExpand,
-        ),
+          Container(
+            child: Offstage(
+              child: Stack(
+                children: _actionItems
+                    .map((_ActionItem item) => AnimatedPositioned(
+                        child: Container(
+                          height: 28,
+                          width: 80,
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(1.5)),
+                            gradient: LinearGradient(colors: [
+                              Colors.amberAccent,
+                              Colors.amber,
+                              Colors.orange
+                            ]),
+                          ),
+                          child: FlatButton(
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            child: Text(
+                              item.title,
+                              style: TextStyle(fontSize: 12),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isExpand = false;
+                                _bottom = 20;
+                              });
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => item.screen));
+                            },
+                          ),
+                        ),
+                        bottom: _bottom + 40 * (_actionItems.indexOf(item)),
+                        curve: Curves.linearToEaseOut,
+                        right: _right,
+                        duration: Duration(milliseconds: 500)))
+                    .toList(),
+              ),
+              offstage: !_isExpand,
+            ),
+          )
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         child: RotationTransition(
@@ -122,6 +189,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         },
       ),
     );
+  }
+
+  void fetBillList() async {
+    Map<String, dynamic> res =
+        await NetManager.getInstance().get("/api/v1/bill_list");
+    BillListBean billTypeListBean = BillListBean.fromJson(res);
+    Provider.of<BillModel>(context, listen: false).set(billTypeListBean.data);
   }
 }
 

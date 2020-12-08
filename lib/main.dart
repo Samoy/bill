@@ -23,6 +23,7 @@
  */
 import 'dart:io';
 
+import 'package:bill/model/bill_model.dart';
 import 'package:bill/model/bill_type_model.dart';
 import 'package:bill/model/token_model.dart';
 import 'package:bill/model/user_model.dart';
@@ -61,6 +62,9 @@ class MyApp extends StatelessWidget {
           ),
           ChangeNotifierProvider(
             create: (_) => BillTypeModel(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => BillModel(),
           )
         ],
         child: MaterialApp(
