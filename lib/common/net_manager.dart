@@ -22,18 +22,24 @@
  * SOFTWARE.
  */
 
+import 'dart:io';
+
 import 'package:bill/common/constant.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
+import 'package:toast/toast.dart';
 
 class NetManager {
   var _dio = Dio();
   static NetManager _netManager;
+  static BuildContext _context;
 
-  static NetManager getInstance() {
+  static NetManager getInstance(BuildContext context) {
     if (_netManager == null) {
       _netManager = NetManager();
     }
+    _context = context;
     return _netManager;
   }
 
@@ -43,9 +49,14 @@ class NetManager {
       options.baseUrl = kBaseUrl;
       options.headers["token"] = prefs.getString(kStorageToken);
     }, onError: (error) {
-      Map<String, dynamic> res = error.response.data;
-      String errorMsg = res["message"] as String;
-      return errorMsg;
+      if (error.response.statusCode == HttpStatus.unauthorized) {
+        Toast.show("token过期，请重新登录", _context, gravity: Toast.CENTER);
+        Navigator.pushReplacementNamed(_context, "/login");
+      } else {
+        Map<String, dynamic> res = error.response.data;
+        String errorMsg = res["message"] as String;
+        Toast.show(errorMsg, _context, gravity: Toast.CENTER);
+      }
     }));
   }
 
@@ -61,6 +72,7 @@ class NetManager {
         await _dio.post(path, data: data, queryParameters: queryParameters);
     return response?.data as Map<String, dynamic>;
   }
+
   Future<Map<String, dynamic>> put(String path,
       {Map<String, dynamic> data, Map<String, dynamic> queryParameters}) async {
     Response response =

@@ -25,7 +25,6 @@ import 'package:bill/common/net_manager.dart';
 import 'package:bill/model/bean/register_bean.dart';
 import 'package:bill/model/user_model.dart';
 import 'package:bill/widget/base.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
@@ -213,8 +212,8 @@ class _RegisterPageState extends State<RegisterPage> {
   void register() async {
     try {
       EasyLoading.show(status: "请稍候...");
-      Map<String, dynamic> res =
-          await NetManager.getInstance().post("/api/v1/user/register", data: {
+      Map<String, dynamic> res = await NetManager.getInstance(context)
+          .post("/api/v1/user/register", data: {
         "username": _username,
         "password": _password,
         "nickname": _nickname,
@@ -230,8 +229,8 @@ class _RegisterPageState extends State<RegisterPage> {
       }
       Toast.show("注册成功", context, gravity: Toast.CENTER);
       Navigator.pop(context);
-    } on DioError catch (e) {
-      Toast.show(e.message, context, gravity: Toast.CENTER);
+    } on Exception catch (e) {
+      print(e);
     } finally {
       EasyLoading.dismiss();
     }

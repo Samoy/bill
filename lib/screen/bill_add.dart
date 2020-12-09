@@ -211,7 +211,7 @@ class _BillAddPageState extends State<BillAddPage> {
     EasyLoading.show(status: "请稍后...");
     try {
       Map<String, dynamic> res =
-          await NetManager.getInstance().post("/api/v1/bill", data: {
+          await NetManager.getInstance(context).post("/api/v1/bill", data: {
         "name": _name,
         "amount": _amount,
         "date": _dateController.text,

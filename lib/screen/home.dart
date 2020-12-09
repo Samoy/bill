@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       parent: _animationController,
       curve: Curves.linear,
     );
-    fetBillList();
+    fetchBillList();
   }
 
   @override
@@ -191,9 +191,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  void fetBillList() async {
+  void fetchBillList() async {
     Map<String, dynamic> res =
-        await NetManager.getInstance().get("/api/v1/bill_list");
+        await NetManager.getInstance(context).get("/api/v1/bill_list");
     BillListBean billTypeListBean = BillListBean.fromJson(res);
     Provider.of<BillModel>(context, listen: false).set(billTypeListBean.data);
   }

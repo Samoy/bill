@@ -80,7 +80,7 @@ class _BillTypeListPageState extends State<BillTypeListPage> {
   ///TODO:这个似乎可以用[FutureProvider]来搞
   void fetchBillTypeList() async {
     Map<String, dynamic> res =
-        await NetManager.getInstance().get("/api/v1/bill_type_list");
+        await NetManager.getInstance(context).get("/api/v1/bill_type_list");
     BillTypeListBean billTypeListBean = BillTypeListBean.fromJson(res);
     Provider.of<BillTypeModel>(context, listen: false)
         .set(billTypeListBean.data);

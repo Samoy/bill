@@ -30,8 +30,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:dio/dio.dart';
-import 'package:toast/toast.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -182,7 +180,7 @@ class _LoginPageState extends State<LoginPage> {
       String username = Provider.of<UserModel>(context, listen: false).username;
       String password = Provider.of<UserModel>(context, listen: false).password;
       EasyLoading.show(status: '请稍候...');
-      Map<String, dynamic> res = await NetManager.getInstance().post(
+      Map<String, dynamic> res = await NetManager.getInstance(context).post(
           "/api/v1/user/login",
           data: {"username": username, "password": password});
       LoginBean loginBean = LoginBean.fromJson(res);
@@ -193,8 +191,8 @@ class _LoginPageState extends State<LoginPage> {
         Provider.of<TokenModel>(context, listen: false).setToken(token);
         Navigator.pushReplacementNamed(context, "/index");
       }
-    } on DioError catch (e) {
-      Toast.show(e.message, context, gravity: Toast.CENTER);
+    } on Exception catch (e) {
+      print(e);
     } finally {
       EasyLoading.dismiss();
     }
