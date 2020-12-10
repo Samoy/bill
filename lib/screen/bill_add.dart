@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import 'package:bill/common/constant.dart';
 import 'package:bill/common/net_manager.dart';
 import 'package:bill/model/bean/bill_type_list_bean.dart';
 import 'package:bill/model/bill_type_model.dart';
@@ -53,7 +54,7 @@ class _BillAddPageState extends State<BillAddPage> {
   String _name = "";
   DateTime _selectedDate = DateTime.now();
   TextEditingController _dateController = TextEditingController(
-      text: DateFormat('yyyy-MM-dd').format(DateTime.now()));
+      text: DateFormat(kDateFormatter).format(DateTime.now()));
   TextEditingController _categoryController = TextEditingController();
   String _remark = "";
   double _amount = 0;
@@ -135,7 +136,7 @@ class _BillAddPageState extends State<BillAddPage> {
                                           _selectedDate = result;
                                         });
                                         _dateController.text =
-                                            DateFormat('yyyy-MM-dd')
+                                            DateFormat(kDateFormatter)
                                                 .format(_selectedDate);
                                       }
                                     }

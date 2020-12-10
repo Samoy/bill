@@ -23,3 +23,4 @@
  */
 const kBaseUrl = "http://47.244.216.182:5000";
 const kStorageToken = "token";
+const kDateFormatter = "yyyy-MM-dd";

@@ -26,12 +26,78 @@ import 'package:bill/model/bean/bill_list_bean.dart';
 import 'package:flutter/foundation.dart';
 
 class BillModel extends ChangeNotifier {
-  List<Bill> _billList = [];
+  List<Bill> _recentBillList = [];
 
-  List<Bill> get billList => _billList;
+  List<Bill> _dailyBillList = [];
+  List<Bill> _weeklyBillList = [];
+  List<Bill> _monthlyBillList = [];
+  List<Bill> _annualBillList = [];
+  double _dailyAmount = 0;
+  double _weeklyAmount = 0;
+  double _monthlyAmount = 0;
+  double _annualAmount = 0;
 
-  void set(List<Bill> billList) {
-    _billList = billList;
+  List<Bill> get recentBillList => _recentBillList;
+
+  List<Bill> get dailyBillList => _dailyBillList;
+
+  List<Bill> get weeklyBillList => _weeklyBillList;
+
+  List<Bill> get monthlyBillList => _monthlyBillList;
+
+  List<Bill> get annualBillList => _annualBillList;
+
+  //fixme:计算金额最好放在服务端来做，以免数据量过大时资源消耗过多
+  double get dailyAmount => _dailyAmount;
+
+  double get weeklyAmount => _weeklyAmount;
+
+  double get monthlyAmount => _monthlyAmount;
+
+  double get annualAmount => _annualAmount;
+
+  set recentBillList(List<Bill> value) {
+    _recentBillList = value;
+    notifyListeners();
+  }
+
+  set dailyBillList(List<Bill> value) {
+    _dailyBillList = value;
+    List<double> amountList =
+        _dailyBillList.map((e) => double.tryParse(e.amount)).toList();
+    if (amountList.isNotEmpty) {
+      _dailyAmount = amountList.reduce((value, element) => value + element);
+    }
+    notifyListeners();
+  }
+
+  set weeklyBillList(List<Bill> value) {
+    _weeklyBillList = value;
+    List<double> amountList =
+        _weeklyBillList.map((e) => double.tryParse(e.amount)).toList();
+    if (amountList.isNotEmpty) {
+      _weeklyAmount = amountList.reduce((value, element) => value + element);
+    }
+    notifyListeners();
+  }
+
+  set monthlyBillList(List<Bill> value) {
+    _monthlyBillList = value;
+    List<double> amountList =
+        _monthlyBillList.map((e) => double.tryParse(e.amount)).toList();
+    if (amountList.isNotEmpty) {
+      _monthlyAmount = amountList.reduce((value, element) => value + element);
+    }
+    notifyListeners();
+  }
+
+  set annualBillList(List<Bill> value) {
+    _annualBillList = value;
+    List<double> amountList =
+        _annualBillList.map((e) => double.tryParse(e.amount)).toList();
+    if (amountList.isNotEmpty) {
+      _annualAmount = amountList.reduce((value, element) => value + element);
+    }
     notifyListeners();
   }
 }
