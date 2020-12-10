@@ -123,7 +123,7 @@ class _BillAddPageState extends State<BillAddPage> {
                                         )
                                       : null,
                                   suffixIconConstraints: BoxConstraints(
-                                      minWidth: 16, maxHeight: 8)),
+                                      minWidth: 16, maxHeight: 10)),
                               onTap: e.title == '时间'
                                   ? () async {
                                       DateTime result = await showDatePicker(

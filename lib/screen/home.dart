@@ -38,7 +38,6 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-//fixme:下方列表应该和页面整体滑动
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   List<_ActionItem> _actionItems = [
     _ActionItem("添加预算", BudgetAddPage()),
@@ -74,144 +73,154 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return BaseWidget(
       body: Stack(
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GridView.count(
-                physics: ClampingScrollPhysics(),
-                childAspectRatio: 1.62,
-                shrinkWrap: true,
-                crossAxisCount: 2,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
+          CustomScrollView(
+            slivers: [
+              SliverPadding(
                 padding: EdgeInsets.all(16),
-                children: [
-                  _GridItem("本日消费", context.watch<BillModel>().dailyAmount,
-                      decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                              colors: [
-                            Colors.amberAccent,
-                            Colors.amber,
-                            Colors.orange
-                          ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight))),
-                  _GridItem("本周消费", context.watch<BillModel>().weeklyAmount,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                            colors: [
-                              Colors.limeAccent,
-                              Colors.lime,
-                              Colors.lime[800]
+                sliver: SliverGrid.count(
+                  childAspectRatio: 1.62,
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 8,
+                  crossAxisSpacing: 8,
+                  children: [
+                    _GridItem("本日消费", context.watch<BillModel>().dailyAmount,
+                        decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                                colors: [
+                              Colors.amberAccent,
+                              Colors.amber,
+                              Colors.orange
                             ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight),
-                      )),
-                  _GridItem("本月消费", context.watch<BillModel>().monthlyAmount,
-                      decoration: BoxDecoration(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight))),
+                    _GridItem("本周消费", context.watch<BillModel>().weeklyAmount,
+                        decoration: BoxDecoration(
                           gradient: LinearGradient(
                               colors: [
-                            Colors.cyanAccent,
-                            Colors.cyan,
-                            Colors.lightBlue
-                          ],
+                                Colors.limeAccent,
+                                Colors.lime,
+                                Colors.lime[800]
+                              ],
                               begin: Alignment.topLeft,
-                              end: Alignment.bottomRight))),
-                  _GridItem("本年消费", context.watch<BillModel>().annualAmount,
-                      decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                              colors: [
-                            Colors.lightGreenAccent,
-                            Colors.lightGreen,
-                            Colors.green
-                          ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight))),
-                ]
-                    .map((e) => Card(
-                          child: Container(
-                            decoration: e.decoration,
-                            child: FlatButton(
-                              padding: EdgeInsets.all(16),
-                              child: Column(
-                                children: [
-                                  Align(
-                                    child: Text(
-                                      e.title,
-                                      style: TextStyle(fontSize: 12),
+                              end: Alignment.bottomRight),
+                        )),
+                    _GridItem("本月消费", context.watch<BillModel>().monthlyAmount,
+                        decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                                colors: [
+                              Colors.cyanAccent,
+                              Colors.cyan,
+                              Colors.lightBlue
+                            ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight))),
+                    _GridItem("本年消费", context.watch<BillModel>().annualAmount,
+                        decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                                colors: [
+                              Colors.lightGreenAccent,
+                              Colors.lightGreen,
+                              Colors.green
+                            ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight))),
+                  ]
+                      .map((e) => Card(
+                            child: Container(
+                              decoration: e.decoration,
+                              child: FlatButton(
+                                padding: EdgeInsets.all(16),
+                                child: Column(
+                                  children: [
+                                    Align(
+                                      child: Text(
+                                        e.title,
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                      alignment: Alignment.topLeft,
                                     ),
-                                    alignment: Alignment.topLeft,
-                                  ),
-                                  SizedBox(
-                                    height: 12,
-                                  ),
-                                  Center(
-                                    child: Text(
-                                      "¥${e.amount.toStringAsFixed(2)}",
-                                      style: TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold),
+                                    SizedBox(
+                                      height: 12,
                                     ),
-                                  )
-                                ],
+                                    Center(
+                                      child: Text(
+                                        "¥${e.amount.toStringAsFixed(2)}",
+                                        style: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                onPressed: () {},
                               ),
-                              onPressed: () {},
                             ),
-                          ),
-                        ))
-                    .toList(),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  '最近7天账单',
-                  style: TextStyle(
-                      fontFamily: "NotoSC-Black",
-                      color: Colors.amber[700],
-                      fontWeight: FontWeight.bold),
+                          ))
+                      .toList(),
                 ),
               ),
-              Expanded(
-                  flex: 1,
-                  child: Container(
-                    child: Consumer<BillModel>(
-                      builder: (context, billModel, child) {
-                        return ListView.separated(
-                          physics: ClampingScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            Bill bill = billModel.recentBillList[index];
-                            return ListTile(
-                              title: Text(bill.name),
-                              leading: Container(
-                                width: 24,
-                                height: double.infinity,
-                                alignment: Alignment.centerLeft,
-                                child: Image.network(
-                                  kBaseUrl + bill.billType.image,
-                                ),
-                              ),
-                              onTap: () {},
-                              subtitle: Text(DateFormat(kDateFormatter)
-                                  .format(DateTime.parse(bill.date))),
-                              trailing: Text(
-                                "¥${double.tryParse(bill.amount).toStringAsFixed(2)}",
-                                style: TextStyle(
-                                    color: Colors.redAccent,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            );
-                          },
-                          itemCount: billModel.recentBillList.length,
-                          separatorBuilder: (context, index) {
-                            return Divider(
-                              height: 0,
-                              thickness: 0.5,
-                            );
-                          },
-                        );
-                      },
+              SliverFixedExtentList(
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    return Container(
+                      margin: EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        '最近7天账单',
+                        style: TextStyle(
+                            fontFamily: "NotoSC-Black",
+                            color: Colors.amber[700],
+                            fontWeight: FontWeight.bold),
+                      ),
+                    );
+                  }, childCount: 1),
+                  itemExtent: 20),
+              SliverFixedExtentList(
+                itemExtent: 70,
+                delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
+                  return Consumer<BillModel>(
+                    builder: (context, billModel, child) {
+                      Bill bill = billModel.recentBillList[index];
+                      return ListTile(
+                        title: Text(bill.name),
+                        leading: Container(
+                          width: 24,
+                          height: double.infinity,
+                          alignment: Alignment.centerLeft,
+                          child: Image.network(
+                            kBaseUrl + bill.billType.image,
+                          ),
+                        ),
+                        onTap: () {},
+                        subtitle: Text(DateFormat(kDateFormatter)
+                            .format(DateTime.parse(bill.date))),
+                        trailing: Text(
+                          "¥${double.tryParse(bill.amount).toStringAsFixed(2)}",
+                          style: TextStyle(
+                              color: Colors.redAccent,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      );
+                    },
+                  );
+                },
+                    childCount: context
+                        .select((BillModel billModel) => billModel)
+                        .recentBillList
+                        .length),
+              ),
+              SliverFixedExtentList(
+                itemExtent: 50,
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  return Container(
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      '到底啦，不要再滑啦！╮(╯▽╰)╭',
+                      style: TextStyle(fontSize: 12, color: Color(0xFFCCCCCC)),
                     ),
-                  ))
+                  );
+                }, childCount: 1),
+              ),
             ],
           ),
           Container(
@@ -283,7 +292,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  void fetchDailyBillList() async {
+  Future<void> fetchDailyBillList() async {
     Map<String, dynamic> res = await NetManager.getInstance(context)
         .get("/api/v1/bill_list", queryParameters: {
       "start_time": getDaily().startTime,
@@ -296,7 +305,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
   }
 
-  void fetchWeeklyBillList() async {
+  Future<void> fetchWeeklyBillList() async {
     Map<String, dynamic> res = await NetManager.getInstance(context)
         .get("/api/v1/bill_list", queryParameters: {
       "start_time": getWeekly().startTime,
@@ -309,7 +318,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
   }
 
-  void fetchMonthlyBillList() async {
+  Future<void> fetchMonthlyBillList() async {
     Map<String, dynamic> res = await NetManager.getInstance(context)
         .get("/api/v1/bill_list", queryParameters: {
       "start_time": getMonthly().startTime,
@@ -322,7 +331,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
   }
 
-  void fetchAnnualBillList() async {
+  Future<void> fetchAnnualBillList() async {
     Map<String, dynamic> res = await NetManager.getInstance(context)
         .get("/api/v1/bill_list", queryParameters: {
       "start_time": getAnnual().startTime,
@@ -335,7 +344,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
   }
 
-  void fetchRecentBillList() async {
+  Future<void> fetchRecentBillList() async {
     Map<String, dynamic> res = await NetManager.getInstance(context)
         .get("/api/v1/bill_list", queryParameters: {
       "start_time": getRecent().startTime,
