@@ -21,6 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-const kBaseUrl = "http://47.244.216.182:5000";
+const gDateTimeFormatter = "yyyy-MM-dd HH:mm:ss";
+const gDateFormatter = "yyyy-MM-dd";
+const gTimeFormatter = "HH:mm:ss";
+const gBaseUrl = "http://47.244.216.182:5000";
+
 const kStorageToken = "token";
-const kDateFormatter = "yyyy-MM-dd";
+const kBillID = "billID";

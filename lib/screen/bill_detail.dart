@@ -22,26 +22,40 @@
  * SOFTWARE.
  */
 
-import 'package:bill/model/bean/bill_list_bean.dart';
-import 'package:bill/model/bean/bill_overview_bean.dart';
-import 'package:flutter/foundation.dart';
+import 'package:bill/common/net_manager.dart';
+import 'package:bill/widget/base.dart';
+import 'package:flutter/material.dart';
 
-class BillModel extends ChangeNotifier {
-  List<Bill> _recentBillList = [];
-  AmountOverview _overview = AmountOverview(
-      annualAmount: "0", monthAmount: "0", weekAmount: "0", todayAmount: "0");
+class BillDetail extends StatefulWidget {
+  final int _id;
 
-  List<Bill> get recentBillList => _recentBillList;
+  @override
+  _BillDetailState createState() => _BillDetailState(_id);
 
-  set recentBillList(List<Bill> value) {
-    _recentBillList = value;
-    notifyListeners();
+  BillDetail(this._id);
+}
+
+class _BillDetailState extends State<BillDetail> {
+  int _id;
+
+  @override
+  void initState() {
+    fetchBillDetail();
+    super.initState();
   }
 
-  AmountOverview get overview => _overview;
-
-  set overview(AmountOverview value) {
-    _overview = value;
-    notifyListeners();
+  @override
+  Widget build(BuildContext context) {
+    return BaseWidget(
+      title: "账单详情",
+    );
   }
+
+  Future fetchBillDetail() async {
+    Map<String, dynamic> res =
+        await NetManager.getInstance(context).get("/api/v1/bill?bill_id=$_id");
+    print(res);
+  }
+
+  _BillDetailState(this._id);
 }

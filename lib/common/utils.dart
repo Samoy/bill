@@ -37,7 +37,7 @@ class TimeRange {
 
 DateTime today =
     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-String todayFormat = DateFormat(kDateFormatter).format(today);
+String todayFormat = DateFormat(gDateTimeFormatter).format(today);
 
 TimeRange getDaily() {
   return TimeRange(todayFormat, todayFormat);
@@ -50,22 +50,22 @@ TimeRange getWeekly() {
     firstDayOfWeek = DateTime.now().subtract(Duration(days: weekDay - 1));
   }
   return TimeRange(
-      DateFormat(kDateFormatter).format(firstDayOfWeek), todayFormat);
+      DateFormat(gDateTimeFormatter).format(firstDayOfWeek), todayFormat);
 }
 
 TimeRange getMonthly() {
   DateTime firstDayOfMonth = DateTime(today.year, today.month, 1);
   return TimeRange(
-      DateFormat(kDateFormatter).format(firstDayOfMonth), todayFormat);
+      DateFormat(gDateTimeFormatter).format(firstDayOfMonth), todayFormat);
 }
 
 TimeRange getAnnual() {
   DateTime firstDayOfYear = DateTime(today.year);
   return TimeRange(
-      DateFormat(kDateFormatter).format(firstDayOfYear), todayFormat);
+      DateFormat(gDateTimeFormatter).format(firstDayOfYear), todayFormat);
 }
 
 TimeRange getRecent() {
   DateTime before7Day = today.subtract(Duration(days: 6));
-  return TimeRange(DateFormat(kDateFormatter).format(before7Day), todayFormat);
+  return TimeRange(DateFormat(gDateTimeFormatter).format(before7Day), todayFormat);
 }

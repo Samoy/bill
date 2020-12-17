@@ -41,8 +41,9 @@ class BillAddPage extends StatefulWidget {
 class _BillAddPageState extends State<BillAddPage> {
   List<_BillItem> _items = [
     _BillItem("名称", icon: Icons.account_balance_wallet_outlined),
-    _BillItem("时间",
+    _BillItem("日期",
         icon: Icons.calendar_today_outlined, inputType: TextInputType.datetime),
+    _BillItem("时间", icon: Icons.alarm, inputType: TextInputType.datetime),
     _BillItem("金额",
         icon: Icons.money_outlined,
         inputType: TextInputType.numberWithOptions(decimal: true)),
@@ -52,9 +53,14 @@ class _BillAddPageState extends State<BillAddPage> {
 
   final _formKey = GlobalKey<FormState>();
   String _name = "";
-  DateTime _selectedDate = DateTime.now();
+  DateTime _currentDate =
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+  DateTime _selectedDate;
+  TimeOfDay _selectTime = TimeOfDay.now();
   TextEditingController _dateController = TextEditingController(
-      text: DateFormat(kDateFormatter).format(DateTime.now()));
+      text: DateFormat(gDateFormatter).format(DateTime.now()));
+  TextEditingController _timeController = TextEditingController(
+      text: DateFormat(gTimeFormatter).format(DateTime.now()));
   TextEditingController _categoryController = TextEditingController();
   String _remark = "";
   double _amount = 0;
@@ -63,11 +69,14 @@ class _BillAddPageState extends State<BillAddPage> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      _selectedDate = _currentDate;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final requiredFields = ['名称', '金额', '类型', '时间'];
+    final requiredFields = ['名称', '金额', '类型', '日期', '时间'];
     return BaseWidget(
       title: "添加账单",
       body: SingleChildScrollView(
@@ -97,11 +106,13 @@ class _BillAddPageState extends State<BillAddPage> {
                                 return null;
                               },
                               keyboardType: e.inputType,
-                              controller: e.title == '时间'
+                              controller: e.title == '日期'
                                   ? _dateController
-                                  : e.title == '类型'
-                                      ? _categoryController
-                                      : null,
+                                  : e.title == '时间'
+                                      ? _timeController
+                                      : e.title == '类型'
+                                          ? _categoryController
+                                          : null,
                               decoration: InputDecoration(
                                   labelText: e.title,
                                   alignLabelWithHint: true,
@@ -124,40 +135,64 @@ class _BillAddPageState extends State<BillAddPage> {
                                       : null,
                                   suffixIconConstraints: BoxConstraints(
                                       minWidth: 16, maxHeight: 10)),
-                              onTap: e.title == '时间'
-                                  ? () async {
-                                      DateTime result = await showDatePicker(
-                                          context: context,
-                                          initialDate: _selectedDate,
-                                          firstDate: DateTime(2000, 1, 1),
-                                          lastDate: DateTime.now());
-                                      if (result != null) {
-                                        setState(() {
-                                          _selectedDate = result;
-                                        });
-                                        _dateController.text =
-                                            DateFormat(kDateFormatter)
-                                                .format(_selectedDate);
-                                      }
+                              onTap: () async {
+                                switch (e.title) {
+                                  case '日期':
+                                    DateTime result = await showDatePicker(
+                                        context: context,
+                                        initialDate: _selectedDate,
+                                        firstDate: DateTime(2000, 1, 1),
+                                        lastDate: _currentDate);
+                                    if (result != null) {
+                                      setState(() {
+                                        _selectedDate = result;
+                                      });
+                                      _dateController.text =
+                                          DateFormat(gDateFormatter)
+                                              .format(_selectedDate);
                                     }
-                                  : e.title == '类型'
-                                      ? () async {
-                                          bool result =
-                                              await Navigator.pushNamed(context,
-                                                  "/bill_type_list") as bool;
-                                          if (result != null && result) {
-                                            BillType billType =
-                                                Provider.of<BillTypeModel>(
-                                                        context,
-                                                        listen: false)
-                                                    .selectBillType;
-                                            _categoryController.text =
-                                                billType.name;
-                                            _billTypeId = billType.id;
-                                          }
-                                        }
-                                      : null,
-                              readOnly: e.title == '时间' || e.title == '类型',
+                                    break;
+                                  case '时间':
+                                    TimeOfDay result = await showTimePicker(
+                                        context: context,
+                                        initialTime: TimeOfDay.now(),
+                                        initialEntryMode:
+                                            TimePickerEntryMode.input,
+                                        builder: (BuildContext context,
+                                            Widget child) {
+                                          return MediaQuery(
+                                            data: MediaQuery.of(context)
+                                                .copyWith(
+                                                    alwaysUse24HourFormat:
+                                                        true),
+                                            child: child,
+                                          );
+                                        });
+                                    setState(() {
+                                      _selectTime = result;
+                                    });
+                                    _timeController.text =
+                                        _selectTime.format(context);
+                                    break;
+                                  case '类型':
+                                    bool result = await Navigator.pushNamed(
+                                        context, "/bill_type_list") as bool;
+                                    if (result != null && result) {
+                                      BillType billType =
+                                          Provider.of<BillTypeModel>(context,
+                                                  listen: false)
+                                              .selectBillType;
+                                      _categoryController.text = billType.name;
+                                      _billTypeId = billType.id;
+                                    }
+                                    break;
+                                  default:
+                                    return null;
+                                }
+                              },
+                              readOnly: e.title == '时间' ||
+                                  e.title == '日期' ||
+                                  e.title == '类型',
                               onChanged: (value) {
                                 if ('名称' == e.title) {
                                   setState(() {
@@ -209,13 +244,20 @@ class _BillAddPageState extends State<BillAddPage> {
   }
 
   void addBill() async {
+    DateTime selectDateTime = _selectedDate
+        .add(Duration(hours: _selectTime.hour, minutes: _selectTime.minute));
+    if (selectDateTime.isAfter(DateTime.now())) {
+      Toast.show("不能超过当前时间", context, gravity: Toast.CENTER);
+      return;
+    }
     EasyLoading.show(status: "请稍后...");
     try {
       Map<String, dynamic> res =
           await NetManager.getInstance(context).post("/api/v1/bill", data: {
         "name": _name,
         "amount": _amount,
-        "date": _dateController.text,
+        "date":
+            "${DateFormat(gDateFormatter).format(_selectedDate)} ${_selectTime.format(context)}:00",
         "type_id": _billTypeId,
         "remark": _remark,
         "income": false,

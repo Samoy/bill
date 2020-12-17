@@ -60,7 +60,7 @@ class _BillTypeListPageState extends State<BillTypeListPage> {
                   .map((item) => ListTile(
                         dense: true,
                         leading: Image.network(
-                          kBaseUrl + item.image,
+                          gBaseUrl + item.image,
                           width: 24,
                           height: 24,
                         ),

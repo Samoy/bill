@@ -46,7 +46,7 @@ class NetManager {
   NetManager() {
     _dio.interceptors.add(InterceptorsWrapper(onRequest: (options) async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      options.baseUrl = kBaseUrl;
+      options.baseUrl = gBaseUrl;
       options.headers["token"] = prefs.getString(kStorageToken);
     }, onError: (error) {
       if (error.response.statusCode == HttpStatus.unauthorized) {

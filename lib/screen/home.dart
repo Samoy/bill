@@ -23,8 +23,8 @@
  */
 import 'package:bill/common/constant.dart';
 import 'package:bill/common/net_manager.dart';
-import 'package:bill/common/utils.dart';
 import 'package:bill/model/bean/bill_list_bean.dart';
+import 'package:bill/model/bean/bill_overview_bean.dart';
 import 'package:bill/model/bill_model.dart';
 import 'package:bill/screen/bill_add.dart';
 import 'package:bill/screen/budget_add.dart';
@@ -32,6 +32,7 @@ import 'package:bill/widget/base.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:toast/toast.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -60,7 +61,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       parent: _animationController,
       curve: Curves.linear,
     );
-    fetchBillList();
+    fetchBill();
   }
 
   @override
@@ -73,112 +74,112 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return BaseWidget(
       body: Stack(
         children: [
-          CustomScrollView(
-            slivers: [
-              SliverPadding(
-                padding: EdgeInsets.all(16),
-                sliver: SliverGrid.count(
-                  childAspectRatio: 1.62,
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8,
-                  children: [
-                    _GridItem("本日消费", context.watch<BillModel>().dailyAmount,
-                        decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                                colors: [
-                              Colors.amberAccent,
-                              Colors.amber,
-                              Colors.orange
-                            ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight))),
-                    _GridItem("本周消费", context.watch<BillModel>().weeklyAmount,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                              colors: [
-                                Colors.limeAccent,
-                                Colors.lime,
-                                Colors.lime[800]
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight),
-                        )),
-                    _GridItem("本月消费", context.watch<BillModel>().monthlyAmount,
-                        decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                                colors: [
-                              Colors.cyanAccent,
-                              Colors.cyan,
-                              Colors.lightBlue
-                            ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight))),
-                    _GridItem("本年消费", context.watch<BillModel>().annualAmount,
-                        decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                                colors: [
-                              Colors.lightGreenAccent,
-                              Colors.lightGreen,
-                              Colors.green
-                            ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight))),
-                  ]
-                      .map((e) => Card(
-                            child: Container(
-                              decoration: e.decoration,
-                              child: FlatButton(
-                                padding: EdgeInsets.all(16),
-                                child: Column(
-                                  children: [
-                                    Align(
-                                      child: Text(
-                                        e.title,
-                                        style: TextStyle(fontSize: 12),
-                                      ),
-                                      alignment: Alignment.topLeft,
-                                    ),
-                                    SizedBox(
-                                      height: 12,
-                                    ),
-                                    Center(
-                                      child: Text(
-                                        "¥${e.amount.toStringAsFixed(2)}",
-                                        style: TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    )
+          Consumer<BillModel>(
+            builder: (context, billModel, child) {
+              return CustomScrollView(
+                slivers: [
+                  SliverPadding(
+                    padding: EdgeInsets.all(16),
+                    sliver: SliverGrid.count(
+                      childAspectRatio: 1.62,
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                      children: [
+                        _GridItem("本日消费", billModel.overview.todayAmount,
+                            decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                    colors: [
+                                  Colors.amberAccent,
+                                  Colors.amber,
+                                  Colors.orange
+                                ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight))),
+                        _GridItem("本周消费", billModel.overview.weekAmount,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                  colors: [
+                                    Colors.limeAccent,
+                                    Colors.lime,
+                                    Colors.lime[800]
                                   ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight),
+                            )),
+                        _GridItem("本月消费", billModel.overview.monthAmount,
+                            decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                    colors: [
+                                  Colors.cyanAccent,
+                                  Colors.cyan,
+                                  Colors.lightBlue
+                                ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight))),
+                        _GridItem("本年消费", billModel.overview.annualAmount,
+                            decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                    colors: [
+                                  Colors.lightGreenAccent,
+                                  Colors.lightGreen,
+                                  Colors.green
+                                ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight))),
+                      ]
+                          .map((e) => Card(
+                                child: Container(
+                                  decoration: e.decoration,
+                                  child: FlatButton(
+                                    padding: EdgeInsets.all(16),
+                                    child: Column(
+                                      children: [
+                                        Align(
+                                          child: Text(
+                                            e.title,
+                                            style: TextStyle(fontSize: 12),
+                                          ),
+                                          alignment: Alignment.topLeft,
+                                        ),
+                                        SizedBox(
+                                          height: 12,
+                                        ),
+                                        Center(
+                                          child: Text(
+                                            "¥${double.tryParse(e.amount).toStringAsFixed(2)}",
+                                            style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    onPressed: () {},
+                                  ),
                                 ),
-                                onPressed: () {},
-                              ),
-                            ),
-                          ))
-                      .toList(),
-                ),
-              ),
-              SliverFixedExtentList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    return Container(
-                      margin: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        '最近7天账单',
-                        style: TextStyle(
-                            fontFamily: "NotoSC-Black",
-                            color: Colors.amber[700],
-                            fontWeight: FontWeight.bold),
-                      ),
-                    );
-                  }, childCount: 1),
-                  itemExtent: 20),
-              SliverFixedExtentList(
-                itemExtent: 70,
-                delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                  return Consumer<BillModel>(
-                    builder: (context, billModel, child) {
+                              ))
+                          .toList(),
+                    ),
+                  ),
+                  SliverFixedExtentList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        return Container(
+                          margin: EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            '最近7天账单',
+                            style: TextStyle(
+                                fontFamily: "NotoSC-Black",
+                                color: Colors.amber[700],
+                                fontWeight: FontWeight.bold),
+                          ),
+                        );
+                      }, childCount: 1),
+                      itemExtent: 20),
+                  SliverFixedExtentList(
+                    itemExtent: 70,
+                    delegate: SliverChildBuilderDelegate(
+                        (BuildContext context, int index) {
                       Bill bill = billModel.recentBillList[index];
                       return ListTile(
                         title: Text(bill.name),
@@ -187,12 +188,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           height: double.infinity,
                           alignment: Alignment.centerLeft,
                           child: Image.network(
-                            kBaseUrl + bill.billType.image,
+                            gBaseUrl + bill.billType.image,
                           ),
                         ),
-                        onTap: () {},
-                        subtitle: Text(DateFormat(kDateFormatter)
-                            .format(DateTime.parse(bill.date))),
+                        onTap: () {
+                          Navigator.pushNamed(context, "/bill_detail",
+                              arguments: {kBillID: bill.id});
+                        },
+                        subtitle: Text(DateFormat(gDateTimeFormatter)
+                            .format(DateTime.tryParse(bill.date).toLocal())),
                         trailing: Text(
                           "¥${double.tryParse(bill.amount).toStringAsFixed(2)}",
                           style: TextStyle(
@@ -200,28 +204,25 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               fontWeight: FontWeight.bold),
                         ),
                       );
-                    },
-                  );
-                },
-                    childCount: context
-                        .select((BillModel billModel) => billModel)
-                        .recentBillList
-                        .length),
-              ),
-              SliverFixedExtentList(
-                itemExtent: 50,
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  return Container(
-                    alignment: Alignment.center,
-                    margin: EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      '到底啦，不要再滑啦！╮(╯▽╰)╭',
-                      style: TextStyle(fontSize: 12, color: Color(0xFFCCCCCC)),
-                    ),
-                  );
-                }, childCount: 1),
-              ),
-            ],
+                    }, childCount: billModel.recentBillList.length),
+                  ),
+                  SliverFixedExtentList(
+                    itemExtent: 50,
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      return Container(
+                        alignment: Alignment.center,
+                        margin: EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          '到底啦，不要再滑啦！╮(╯▽╰)╭',
+                          style:
+                              TextStyle(fontSize: 12, color: Color(0xFFCCCCCC)),
+                        ),
+                      );
+                    }, childCount: 1),
+                  ),
+                ],
+              );
+            },
           ),
           Container(
             child: Offstage(
@@ -258,7 +259,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           builder: (context) => item._screen))
                                   as bool;
                               if (res != null && res) {
-                                fetchBillList();
+                                fetchBill();
                               }
                             },
                           ),
@@ -292,75 +293,28 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  Future<void> fetchDailyBillList() async {
-    Map<String, dynamic> res = await NetManager.getInstance(context)
-        .get("/api/v1/bill_list", queryParameters: {
-      "start_time": getDaily().startTime,
-      "end_time": getDaily().endTime,
+  void fetchBill() {
+    Future.wait([fetchBillOverview(), fetchRecentBillList()])
+        .catchError((error) {
+      print("发生了错误:$error");
+      Toast.show("获取账单失败，请稍后再试", context, gravity: Toast.CENTER);
     });
-    if (res != null) {
-      BillListBean billTypeListBean = BillListBean.fromJson(res);
-      Provider.of<BillModel>(context, listen: false).dailyBillList =
-          billTypeListBean.data;
-    }
   }
 
-  Future<void> fetchWeeklyBillList() async {
-    Map<String, dynamic> res = await NetManager.getInstance(context)
-        .get("/api/v1/bill_list", queryParameters: {
-      "start_time": getWeekly().startTime,
-      "end_time": getWeekly().endTime,
-    });
-    if (res != null) {
-      BillListBean billTypeListBean = BillListBean.fromJson(res);
-      Provider.of<BillModel>(context, listen: false).weeklyBillList =
-          billTypeListBean.data;
-    }
-  }
-
-  Future<void> fetchMonthlyBillList() async {
-    Map<String, dynamic> res = await NetManager.getInstance(context)
-        .get("/api/v1/bill_list", queryParameters: {
-      "start_time": getMonthly().startTime,
-      "end_time": getMonthly().endTime,
-    });
-    if (res != null) {
-      BillListBean billTypeListBean = BillListBean.fromJson(res);
-      Provider.of<BillModel>(context, listen: false).monthlyBillList =
-          billTypeListBean.data;
-    }
-  }
-
-  Future<void> fetchAnnualBillList() async {
-    Map<String, dynamic> res = await NetManager.getInstance(context)
-        .get("/api/v1/bill_list", queryParameters: {
-      "start_time": getAnnual().startTime,
-      "end_time": getAnnual().endTime,
-    });
-    if (res != null) {
-      BillListBean billTypeListBean = BillListBean.fromJson(res);
-      Provider.of<BillModel>(context, listen: false).annualBillList =
-          billTypeListBean.data;
-    }
+  Future<void> fetchBillOverview() async {
+    Map<String, dynamic> res =
+        await NetManager.getInstance(context).get("/api/v1/bill/overview");
+    BillOverviewBean billOverviewBean = BillOverviewBean.fromJson(res);
+    Provider.of<BillModel>(context, listen: false).overview =
+        billOverviewBean.data;
   }
 
   Future<void> fetchRecentBillList() async {
-    Map<String, dynamic> res = await NetManager.getInstance(context)
-        .get("/api/v1/bill_list", queryParameters: {
-      "start_time": getRecent().startTime,
-      "end_time": getRecent().endTime,
-    });
-    BillListBean billTypeListBean = BillListBean.fromJson(res);
+    Map<String, dynamic> res =
+        await NetManager.getInstance(context).get("/api/v1/bill/recent");
+    BillListBean billListBean = BillListBean.fromJson(res);
     Provider.of<BillModel>(context, listen: false).recentBillList =
-        billTypeListBean.data;
-  }
-
-  void fetchBillList() {
-    fetchDailyBillList();
-    fetchWeeklyBillList();
-    fetchMonthlyBillList();
-    fetchAnnualBillList();
-    fetchRecentBillList();
+        billListBean.data;
   }
 }
 
@@ -377,12 +331,12 @@ class _ActionItem {
 
 class _GridItem {
   String _title;
-  double _amount;
+  String _amount;
   BoxDecoration decoration;
 
   _GridItem(this._title, this._amount, {this.decoration});
 
   String get title => _title;
 
-  double get amount => _amount;
+  String get amount => _amount;
 }

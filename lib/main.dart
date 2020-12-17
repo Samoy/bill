@@ -23,11 +23,13 @@
  */
 import 'dart:io';
 
+import 'package:bill/common/constant.dart';
 import 'package:bill/model/bill_model.dart';
 import 'package:bill/model/bill_type_model.dart';
 import 'package:bill/model/token_model.dart';
 import 'package:bill/model/user_model.dart';
 import 'package:bill/screen/bill_add.dart';
+import 'package:bill/screen/bill_detail.dart';
 import 'package:bill/screen/bill_type_list.dart';
 import 'package:bill/screen/budget_add.dart';
 import 'package:bill/screen/index.dart';
@@ -88,7 +90,12 @@ class MyApp extends StatelessWidget {
                     borderSide: BorderSide(color: Colors.amber),
                   ))),
           initialRoute: "/",
-          builder: EasyLoading.init(),
+          builder: EasyLoading.init(builder: (context, child) {
+            return MediaQuery(
+                data: MediaQuery.of(context)
+                    .copyWith(alwaysUse24HourFormat: true),
+                child: child);
+          }),
           routes: {
             "/": (_) => SplashPage(),
             "/login": (_) => LoginPage(),
@@ -96,7 +103,10 @@ class MyApp extends StatelessWidget {
             "/index": (_) => IndexPage(),
             "/bill_add": (_) => BillAddPage(),
             "/budget_add": (_) => BudgetAddPage(),
-            "/bill_type_list": (_) => BillTypeListPage()
+            "/bill_type_list": (_) => BillTypeListPage(),
+            "/bill_detail": (context) => BillDetail((ModalRoute.of(context)
+                .settings
+                .arguments as Map<String, int>)[kBillID])
           },
         ));
   }
