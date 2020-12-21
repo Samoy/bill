@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-import 'package:bill/model/bean/bill_detail_bean.dart';
 import 'package:bill/model/bean/bill_list_bean.dart';
 import 'package:bill/model/bean/bill_overview_bean.dart';
 import 'package:flutter/foundation.dart';

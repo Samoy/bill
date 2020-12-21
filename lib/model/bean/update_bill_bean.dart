@@ -22,8 +22,6 @@
  * SOFTWARE.
  */
 
-import 'package:bill/model/bean/bill_type_list_bean.dart';
-
 import 'bill_list_bean.dart';
 
 /// data : {"id":1,"created_at":"2020-12-08T16:39:43+08:00","updated_at":"2020-12-08T16:39:43+08:00","name":"吃饭","amount":"20.88","bill_type":{"id":1,"created_at":"2020-12-08T16:39:35+08:00","updated_at":"2020-12-08T16:39:35+08:00","name":"餐饮美食","image":"/images/1607416775.png","owner":1},"date":"2020-12-08T08:00:00+08:00","remark":"午饭","user_id":1,"income":false}

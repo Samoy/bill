@@ -24,8 +24,6 @@
 import 'dart:io';
 
 import 'package:bill/common/constant.dart';
-import 'package:bill/model/bean/bill_list_bean.dart';
-import 'package:bill/model/bill_model.dart';
 import 'package:bill/model/bill_model.dart';
 import 'package:bill/model/bill_type_model.dart';
 import 'package:bill/model/token_model.dart';
