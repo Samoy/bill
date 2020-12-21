@@ -24,7 +24,8 @@
 const gDateTimeFormatter = "yyyy-MM-dd HH:mm:ss";
 const gDateFormatter = "yyyy-MM-dd";
 const gTimeFormatter = "HH:mm:ss";
-const gBaseUrl = "http://47.244.216.182:5000";
+const gTimeOfDayFormatter = "HH:mm";
+const gBaseUrl = "http://127.0.0.1:5000";
 
 const kStorageToken = "token";
 const kBillID = "billID";

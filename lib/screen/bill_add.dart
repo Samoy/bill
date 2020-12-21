@@ -60,7 +60,7 @@ class _BillAddPageState extends State<BillAddPage> {
   TextEditingController _dateController = TextEditingController(
       text: DateFormat(gDateFormatter).format(DateTime.now()));
   TextEditingController _timeController = TextEditingController(
-      text: DateFormat(gTimeFormatter).format(DateTime.now()));
+      text: DateFormat(gTimeOfDayFormatter).format(DateTime.now()));
   TextEditingController _categoryController = TextEditingController();
   String _remark = "";
   double _amount = 0;

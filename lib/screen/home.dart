@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _ActionItem("添加预算", BudgetAddPage()),
     _ActionItem("添加账单", BillAddPage())
   ];
-  double _bottom = 20;
+  double _bottom = 40;
   double _right = 4;
   bool _isExpand = false;
   AnimationController _animationController;
@@ -76,151 +76,154 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         children: [
           Consumer<BillModel>(
             builder: (context, billModel, child) {
-              return CustomScrollView(
-                slivers: [
-                  SliverPadding(
-                    padding: EdgeInsets.all(16),
-                    sliver: SliverGrid.count(
-                      childAspectRatio: 1.62,
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                      children: [
-                        _GridItem("本日消费", billModel.overview.todayAmount,
-                            decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                    colors: [
-                                  Colors.amberAccent,
-                                  Colors.amber,
-                                  Colors.orange
-                                ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight))),
-                        _GridItem("本周消费", billModel.overview.weekAmount,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                  colors: [
-                                    Colors.limeAccent,
-                                    Colors.lime,
-                                    Colors.lime[800]
+              return RefreshIndicator(
+                onRefresh: fetchBill,
+                child: CustomScrollView(
+                  slivers: [
+                    SliverPadding(
+                      padding: EdgeInsets.all(16),
+                      sliver: SliverGrid.count(
+                        childAspectRatio: 1.62,
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 8,
+                        crossAxisSpacing: 8,
+                        children: [
+                          _GridItem("本日消费", billModel.overview.todayAmount,
+                              decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                      colors: [
+                                    Colors.amberAccent,
+                                    Colors.amber,
+                                    Colors.orange
                                   ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight),
-                            )),
-                        _GridItem("本月消费", billModel.overview.monthAmount,
-                            decoration: BoxDecoration(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight))),
+                          _GridItem("本周消费", billModel.overview.weekAmount,
+                              decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                     colors: [
-                                  Colors.cyanAccent,
-                                  Colors.cyan,
-                                  Colors.lightBlue
-                                ],
+                                      Colors.limeAccent,
+                                      Colors.lime,
+                                      Colors.lime[800]
+                                    ],
                                     begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight))),
-                        _GridItem("本年消费", billModel.overview.annualAmount,
-                            decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                    colors: [
-                                  Colors.lightGreenAccent,
-                                  Colors.lightGreen,
-                                  Colors.green
-                                ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight))),
-                      ]
-                          .map((e) => Card(
-                                child: Container(
-                                  decoration: e.decoration,
-                                  child: FlatButton(
-                                    padding: EdgeInsets.all(16),
-                                    child: Column(
-                                      children: [
-                                        Align(
-                                          child: Text(
-                                            e.title,
-                                            style: TextStyle(fontSize: 12),
+                                    end: Alignment.bottomRight),
+                              )),
+                          _GridItem("本月消费", billModel.overview.monthAmount,
+                              decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                      colors: [
+                                    Colors.cyanAccent,
+                                    Colors.cyan,
+                                    Colors.lightBlue
+                                  ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight))),
+                          _GridItem("本年消费", billModel.overview.annualAmount,
+                              decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                      colors: [
+                                    Colors.lightGreenAccent,
+                                    Colors.lightGreen,
+                                    Colors.green
+                                  ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight))),
+                        ]
+                            .map((e) => Card(
+                                  child: Container(
+                                    decoration: e.decoration,
+                                    child: FlatButton(
+                                      padding: EdgeInsets.all(16),
+                                      child: Column(
+                                        children: [
+                                          Align(
+                                            child: Text(
+                                              e.title,
+                                              style: TextStyle(fontSize: 12),
+                                            ),
+                                            alignment: Alignment.topLeft,
                                           ),
-                                          alignment: Alignment.topLeft,
-                                        ),
-                                        SizedBox(
-                                          height: 12,
-                                        ),
-                                        Center(
-                                          child: Text(
-                                            "¥${double.tryParse(e.amount).toStringAsFixed(2)}",
-                                            style: TextStyle(
-                                                fontSize: 24,
-                                                fontWeight: FontWeight.bold),
+                                          SizedBox(
+                                            height: 12,
                                           ),
-                                        )
-                                      ],
+                                          Center(
+                                            child: Text(
+                                              "¥${double.tryParse(e.amount).toStringAsFixed(2)}",
+                                              style: TextStyle(
+                                                  fontSize: 24,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      onPressed: () {},
                                     ),
-                                    onPressed: () {},
                                   ),
-                                ),
-                              ))
-                          .toList(),
+                                ))
+                            .toList(),
+                      ),
                     ),
-                  ),
-                  SliverFixedExtentList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        return Container(
-                          margin: EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            '最近7天账单',
+                    SliverFixedExtentList(
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          return Container(
+                            margin: EdgeInsets.symmetric(horizontal: 16),
+                            child: Text(
+                              '最近7天账单',
+                              style: TextStyle(
+                                  fontFamily: "NotoSC-Black",
+                                  color: Colors.amber[700],
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          );
+                        }, childCount: 1),
+                        itemExtent: 20),
+                    SliverFixedExtentList(
+                      itemExtent: 70,
+                      delegate: SliverChildBuilderDelegate(
+                          (BuildContext context, int index) {
+                        Bill bill = billModel.recentBillList[index];
+                        return ListTile(
+                          title: Text(bill.name),
+                          leading: Container(
+                            width: 24,
+                            height: double.infinity,
+                            alignment: Alignment.centerLeft,
+                            child: Image.network(
+                              gBaseUrl + bill.billType.image,
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.pushNamed(context, "/bill_detail",
+                                arguments: {kBillID: bill.id});
+                          },
+                          subtitle: Text(DateFormat(gDateTimeFormatter)
+                              .format(DateTime.tryParse(bill.date).toLocal())),
+                          trailing: Text(
+                            "¥${double.tryParse(bill.amount).toStringAsFixed(2)}",
                             style: TextStyle(
-                                fontFamily: "NotoSC-Black",
-                                color: Colors.amber[700],
+                                color: Colors.redAccent,
                                 fontWeight: FontWeight.bold),
                           ),
                         );
-                      }, childCount: 1),
-                      itemExtent: 20),
-                  SliverFixedExtentList(
-                    itemExtent: 70,
-                    delegate: SliverChildBuilderDelegate(
-                        (BuildContext context, int index) {
-                      Bill bill = billModel.recentBillList[index];
-                      return ListTile(
-                        title: Text(bill.name),
-                        leading: Container(
-                          width: 24,
-                          height: double.infinity,
-                          alignment: Alignment.centerLeft,
-                          child: Image.network(
-                            gBaseUrl + bill.billType.image,
+                      }, childCount: billModel.recentBillList.length),
+                    ),
+                    SliverFixedExtentList(
+                      itemExtent: 50,
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        return Container(
+                          alignment: Alignment.center,
+                          margin: EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            '没有更多数据啦！╮(╯▽╰)╭',
+                            style: TextStyle(
+                                fontSize: 12, color: Color(0xFFCCCCCC)),
                           ),
-                        ),
-                        onTap: () {
-                          Navigator.pushNamed(context, "/bill_detail",
-                              arguments: {kBillID: bill.id});
-                        },
-                        subtitle: Text(DateFormat(gDateTimeFormatter)
-                            .format(DateTime.tryParse(bill.date).toLocal())),
-                        trailing: Text(
-                          "¥${double.tryParse(bill.amount).toStringAsFixed(2)}",
-                          style: TextStyle(
-                              color: Colors.redAccent,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      );
-                    }, childCount: billModel.recentBillList.length),
-                  ),
-                  SliverFixedExtentList(
-                    itemExtent: 50,
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      return Container(
-                        alignment: Alignment.center,
-                        margin: EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          '到底啦，不要再滑啦！╮(╯▽╰)╭',
-                          style:
-                              TextStyle(fontSize: 12, color: Color(0xFFCCCCCC)),
-                        ),
-                      );
-                    }, childCount: 1),
-                  ),
-                ],
+                        );
+                      }, childCount: 1),
+                    ),
+                  ],
+                ),
               );
             },
           ),
@@ -230,8 +233,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 children: _actionItems
                     .map((_ActionItem item) => AnimatedPositioned(
                         child: Container(
-                          height: 28,
-                          width: 80,
+                          height: 35,
+                          width: 100,
                           decoration: BoxDecoration(
                             borderRadius:
                                 BorderRadius.all(Radius.circular(1.5)),
@@ -264,7 +267,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             },
                           ),
                         ),
-                        bottom: _bottom + 40 * (_actionItems.indexOf(item)),
+                        bottom: _bottom + 50 * (_actionItems.indexOf(item)),
                         curve: Curves.linearToEaseOut,
                         right: _right,
                         duration: Duration(milliseconds: 500)))
@@ -282,19 +285,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ),
         elevation: 2,
         highlightElevation: 2,
-        mini: true,
         onPressed: () {
           setState(() {
             _isExpand = !_isExpand;
-            _bottom = _isExpand ? 70 : 20;
+            _bottom = _isExpand ? 80 : 40;
           });
         },
       ),
     );
   }
 
-  void fetchBill() {
-    Future.wait([fetchBillOverview(), fetchRecentBillList()])
+  Future<void> fetchBill() {
+    return Future.wait([fetchBillOverview(), fetchRecentBillList()])
         .catchError((error) {
       print("发生了错误:$error");
       Toast.show("获取账单失败，请稍后再试", context, gravity: Toast.CENTER);

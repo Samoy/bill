@@ -22,12 +22,14 @@
  * SOFTWARE.
  */
 
-import 'package:bill/model/bean/bill_list_bean.dart';
+import 'package:bill/model/bean/bill_type_list_bean.dart';
 
-/// data : {"id":13,"created_at":"2020-12-11T09:51:15+08:00","updated_at":"2020-12-11T09:51:15+08:00","name":"上班公交","amount":"1.6","bill_type":null,"date":"2020-12-11T08:00:00+08:00","remark":"家到柳州东路","user_id":1,"income":false}
-/// message : "获取账单成功"
+import 'bill_list_bean.dart';
 
-class BillDetailBean {
+/// data : {"id":1,"created_at":"2020-12-08T16:39:43+08:00","updated_at":"2020-12-08T16:39:43+08:00","name":"吃饭","amount":"20.88","bill_type":{"id":1,"created_at":"2020-12-08T16:39:35+08:00","updated_at":"2020-12-08T16:39:35+08:00","name":"餐饮美食","image":"/images/1607416775.png","owner":1},"date":"2020-12-08T08:00:00+08:00","remark":"午饭","user_id":1,"income":false}
+/// message : "账单更新成功"
+
+class UpdateBillBean {
   Bill _data;
   String _message;
 
@@ -35,12 +37,12 @@ class BillDetailBean {
 
   String get message => _message;
 
-  BillDetailBean({Bill data, String message}) {
+  UpdateBillBean({Bill data, String message}) {
     _data = data;
     _message = message;
   }
 
-  BillDetailBean.fromJson(dynamic json) {
+  UpdateBillBean.fromJson(dynamic json) {
     _data = json["data"] != null ? Bill.fromJson(json["data"]) : null;
     _message = json["message"];
   }
@@ -54,3 +56,14 @@ class BillDetailBean {
     return map;
   }
 }
+
+/// id : 1
+/// created_at : "2020-12-08T16:39:43+08:00"
+/// updated_at : "2020-12-08T16:39:43+08:00"
+/// name : "吃饭"
+/// amount : "20.88"
+/// bill_type : {"id":1,"created_at":"2020-12-08T16:39:35+08:00","updated_at":"2020-12-08T16:39:35+08:00","name":"餐饮美食","image":"/images/1607416775.png","owner":1}
+/// date : "2020-12-08T08:00:00+08:00"
+/// remark : "午饭"
+/// user_id : 1
+/// income : false

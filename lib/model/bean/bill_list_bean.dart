@@ -24,7 +24,7 @@
 
 import 'bill_type_list_bean.dart';
 
-/// data : [{"id":1,"created_at":"2020-12-08T16:39:43+08:00","updated_at":"2020-12-08T16:39:43+08:00","name":"吃饭","amount":"20.88","billType":{"id":1,"created_at":"2020-12-08T16:39:35+08:00","updated_at":"2020-12-08T16:39:35+08:00","name":"餐饮美食","image":"/images/1607416775.png","owner":1},"date":"2020-12-08T08:00:00+08:00","remark":"午饭","user_id":1,"income":false}]
+/// data : [{"id":1,"created_at":"2020-12-08T16:39:43+08:00","updated_at":"2020-12-08T16:39:43+08:00","name":"吃饭","amount":"20.88","bill_type":{"id":1,"created_at":"2020-12-08T16:39:35+08:00","updated_at":"2020-12-08T16:39:35+08:00","name":"餐饮美食","image":"/images/1607416775.png","owner":1},"date":"2020-12-08T08:00:00+08:00","remark":"午饭","user_id":1,"income":false}]
 /// message : "查询账单列表成功"
 
 class BillListBean {
@@ -125,7 +125,7 @@ class Bill {
     _updatedAt = json["updated_at"];
     _name = json["name"];
     _amount = json["amount"];
-    _billType = json["billType"] != null ? BillType.fromJson(json["billType"]) : null;
+    _billType = json["bill_type"] != null ? BillType.fromJson(json["bill_type"]) : null;
     _date = json["date"];
     _remark = json["remark"];
     _userId = json["user_id"];
@@ -140,7 +140,7 @@ class Bill {
     map["name"] = _name;
     map["amount"] = _amount;
     if (_billType != null) {
-      map["billType"] = _billType.toJson();
+      map["bill_type"] = _billType.toJson();
     }
     map["date"] = _date;
     map["remark"] = _remark;
