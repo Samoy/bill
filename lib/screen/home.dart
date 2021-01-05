@@ -28,10 +28,11 @@ import 'package:bill/model/bean/bill_overview_bean.dart';
 import 'package:bill/model/bill_model.dart';
 import 'package:bill/screen/bill_add.dart';
 import 'package:bill/screen/budget_add.dart';
+import 'package:bill/utils/time.dart';
 import 'package:bill/widget/base.dart';
+import 'package:bill/widget/bill_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 import 'package:toast/toast.dart';
 
 class HomePage extends StatefulWidget {
@@ -76,6 +77,45 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         children: [
           Consumer<BillModel>(
             builder: (context, billModel, child) {
+              List<_OverviewItem> gridItems = [
+                _OverviewItem("今日消费", billModel.overview.todayAmount,
+                    label: "今日账单",
+                    timeRange: getDaily(),
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: [
+                      Colors.amberAccent,
+                      Colors.amber,
+                      Colors.orange
+                    ], begin: Alignment.topLeft, end: Alignment.bottomRight))),
+                _OverviewItem("本周消费", billModel.overview.weekAmount,
+                    label: "本周账单",
+                    timeRange: getWeekly(),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(colors: [
+                        Colors.limeAccent,
+                        Colors.lime,
+                        Colors.lime[800]
+                      ], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                    )),
+                _OverviewItem("本月消费", billModel.overview.monthAmount,
+                    label: "本月账单",
+                    timeRange: getMonthly(),
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: [
+                      Colors.cyanAccent,
+                      Colors.cyan,
+                      Colors.lightBlue
+                    ], begin: Alignment.topLeft, end: Alignment.bottomRight))),
+                _OverviewItem("本年消费", billModel.overview.annualAmount,
+                    label: "本年账单",
+                    timeRange: getAnnual(),
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: [
+                      Colors.lightGreenAccent,
+                      Colors.lightGreen,
+                      Colors.green
+                    ], begin: Alignment.topLeft, end: Alignment.bottomRight))),
+              ];
               return RefreshIndicator(
                 onRefresh: fetchBill,
                 child: CustomScrollView(
@@ -87,49 +127,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         crossAxisCount: 2,
                         mainAxisSpacing: 8,
                         crossAxisSpacing: 8,
-                        children: [
-                          _GridItem("本日消费", billModel.overview.todayAmount,
-                              decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                      colors: [
-                                    Colors.amberAccent,
-                                    Colors.amber,
-                                    Colors.orange
-                                  ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight))),
-                          _GridItem("本周消费", billModel.overview.weekAmount,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                    colors: [
-                                      Colors.limeAccent,
-                                      Colors.lime,
-                                      Colors.lime[800]
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight),
-                              )),
-                          _GridItem("本月消费", billModel.overview.monthAmount,
-                              decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                      colors: [
-                                    Colors.cyanAccent,
-                                    Colors.cyan,
-                                    Colors.lightBlue
-                                  ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight))),
-                          _GridItem("本年消费", billModel.overview.annualAmount,
-                              decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                      colors: [
-                                    Colors.lightGreenAccent,
-                                    Colors.lightGreen,
-                                    Colors.green
-                                  ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight))),
-                        ]
+                        children: gridItems
                             .map((e) => Card(
                                   child: Container(
                                     decoration: e.decoration,
@@ -157,70 +155,54 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           )
                                         ],
                                       ),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        Navigator.pushNamed(
+                                            context, "/bill_list",
+                                            arguments: {
+                                              kTitle: e.label,
+                                              kStartTime: e.timeRange.startTime,
+                                              kEndTime: e.timeRange.endTime
+                                            });
+                                      },
                                     ),
                                   ),
                                 ))
                             .toList(),
                       ),
                     ),
-                    SliverFixedExtentList(
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                          return Container(
-                            margin: EdgeInsets.symmetric(horizontal: 16),
-                            child: Text(
-                              '最近7天账单',
-                              style: TextStyle(
-                                  fontFamily: "NotoSC-Black",
-                                  color: Colors.amber[700],
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          );
-                        }, childCount: 1),
-                        itemExtent: 20),
+                    SliverToBoxAdapter(
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          '最近7天账单',
+                          style: TextStyle(
+                              fontFamily: "NotoSC-Black",
+                              color: Colors.amber[700],
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
                     SliverFixedExtentList(
                       itemExtent: 70,
                       delegate: SliverChildBuilderDelegate(
                           (BuildContext context, int index) {
                         Bill bill = billModel.recentBillList[index];
-                        return ListTile(
-                          title: Text(bill.name),
-                          leading: Container(
-                            width: 24,
-                            height: double.infinity,
-                            alignment: Alignment.centerLeft,
-                            child: Image.network(
-                              gBaseUrl + bill.billType.image,
-                            ),
-                          ),
-                          onTap: () {
-                            Navigator.pushNamed(context, "/bill_detail",
-                                arguments: {kBillID: bill.id});
-                          },
-                          subtitle: Text(DateFormat(gDateTimeFormatter)
-                              .format(DateTime.tryParse(bill.date).toLocal())),
-                          trailing: Text(
-                            "¥${double.tryParse(bill.amount).toStringAsFixed(2)}",
-                            style: TextStyle(
-                                color: Colors.redAccent,
-                                fontWeight: FontWeight.bold),
-                          ),
+                        return BillListItem(
+                          bill,
+                          onUpdateSuccess: fetchBill,
                         );
                       }, childCount: billModel.recentBillList.length),
                     ),
-                    SliverFixedExtentList(
-                      itemExtent: 50,
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        return Container(
-                          alignment: Alignment.center,
-                          margin: EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            '没有更多数据啦！╮(╯▽╰)╭',
-                            style: TextStyle(
-                                fontSize: 12, color: Color(0xFFCCCCCC)),
-                          ),
-                        );
-                      }, childCount: 1),
+                    SliverToBoxAdapter(
+                      child: Container(
+                        alignment: Alignment.center,
+                        margin: EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          '没有更多数据啦！╮(╯▽╰)╭',
+                          style:
+                              TextStyle(fontSize: 12, color: Color(0xFFCCCCCC)),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -331,12 +313,15 @@ class _ActionItem {
   Widget get screen => _screen;
 }
 
-class _GridItem {
+class _OverviewItem {
   String _title;
   String _amount;
   BoxDecoration decoration;
+  String label;
+  TimeRange timeRange;
 
-  _GridItem(this._title, this._amount, {this.decoration});
+  _OverviewItem(this._title, this._amount,
+      {this.decoration, this.label, this.timeRange});
 
   String get title => _title;
 

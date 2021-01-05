@@ -21,8 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 import 'package:bill/common/constant.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+enum TimeUnit { YEAR, MONTH, WEEK, DAY, HOUR, MINUTE }
 
 class TimeRange {
   String _startTime;
@@ -35,37 +39,35 @@ class TimeRange {
   String get startTime => _startTime;
 }
 
-DateTime today =
-    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-String todayFormat = DateFormat(gDateTimeFormatter).format(today);
-
 TimeRange getDaily() {
-  return TimeRange(todayFormat, todayFormat);
+  DateTime now = DateTime.now();
+  return TimeRange(
+      DateFormat(gDateTimeFormatter)
+          .format(DateTime(now.year, now.month, now.day)),
+      DateFormat(gDateTimeFormatter).format(now));
 }
 
 TimeRange getWeekly() {
-  int weekDay = DateTime.now().weekday;
-  DateTime firstDayOfWeek = today;
-  if (weekDay > 1) {
-    firstDayOfWeek = DateTime.now().subtract(Duration(days: weekDay - 1));
+  DateTime now = DateTime.now();
+  DateTime firstDayOfWeek = DateTime(now.year, now.month, now.day);
+  if (now.weekday != DateTime.monday) {
+    firstDayOfWeek =
+        firstDayOfWeek.subtract(Duration(days: now.weekday - DateTime.monday));
   }
-  return TimeRange(
-      DateFormat(gDateTimeFormatter).format(firstDayOfWeek), todayFormat);
+  return TimeRange(DateFormat(gDateTimeFormatter).format(firstDayOfWeek),
+      DateFormat(gDateTimeFormatter).format(now));
 }
 
 TimeRange getMonthly() {
-  DateTime firstDayOfMonth = DateTime(today.year, today.month, 1);
-  return TimeRange(
-      DateFormat(gDateTimeFormatter).format(firstDayOfMonth), todayFormat);
+  DateTime now = DateTime.now();
+  DateTime firstDayOfMonth = DateTime(now.year, now.month);
+  return TimeRange(DateFormat(gDateTimeFormatter).format(firstDayOfMonth),
+      DateFormat(gDateTimeFormatter).format(now));
 }
 
 TimeRange getAnnual() {
-  DateTime firstDayOfYear = DateTime(today.year);
-  return TimeRange(
-      DateFormat(gDateTimeFormatter).format(firstDayOfYear), todayFormat);
-}
-
-TimeRange getRecent() {
-  DateTime before7Day = today.subtract(Duration(days: 6));
-  return TimeRange(DateFormat(gDateTimeFormatter).format(before7Day), todayFormat);
+  DateTime now = DateTime.now();
+  DateTime firstDayOfYear = DateTime(now.year);
+  return TimeRange(DateFormat(gDateTimeFormatter).format(firstDayOfYear),
+      DateFormat(gDateTimeFormatter).format(now));
 }

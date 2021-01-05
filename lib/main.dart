@@ -30,6 +30,7 @@ import 'package:bill/model/token_model.dart';
 import 'package:bill/model/user_model.dart';
 import 'package:bill/screen/bill_add.dart';
 import 'package:bill/screen/bill_detail.dart';
+import 'package:bill/screen/bill_list.dart';
 import 'package:bill/screen/bill_type_list.dart';
 import 'package:bill/screen/budget_add.dart';
 import 'package:bill/screen/index.dart';
@@ -104,6 +105,12 @@ class MyApp extends StatelessWidget {
             "/bill_add": (_) => BillAddPage(),
             "/budget_add": (_) => BudgetAddPage(),
             "/bill_type_list": (_) => BillTypeListPage(),
+            "/bill_list": (context) {
+              Map<String, String> arguments =
+                  ModalRoute.of(context).settings.arguments;
+              return BillListPage(arguments[kTitle], arguments[kStartTime],
+                  arguments[kEndTime]);
+            },
             "/bill_detail": (context) => BillDetail((ModalRoute.of(context)
                 .settings
                 .arguments as Map<String, int>)[kBillID])

@@ -21,35 +21,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
+import 'package:bill/common/constant.dart';
 import 'package:bill/model/bean/bill_list_bean.dart';
-import 'package:bill/model/bean/bill_overview_bean.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class BillModel extends ChangeNotifier {
-  AmountOverview _overview = AmountOverview(
-      annualAmount: "0", monthAmount: "0", weekAmount: "0", todayAmount: "0");
-  List<Bill> _recentBillList = [];
-  List<Bill> _currentList = [];
+class BillListItem extends StatelessWidget {
+  final Bill _bill;
+  final Function onUpdateSuccess;
 
-  AmountOverview get overview => _overview;
+  BillListItem(this._bill, {this.onUpdateSuccess});
 
-  List<Bill> get recentBillList => _recentBillList;
-
-  List<Bill> get currentList => _currentList;
-
-  set overview(AmountOverview value) {
-    _overview = value;
-    notifyListeners();
-  }
-
-  set recentBillList(List<Bill> value) {
-    _recentBillList = value;
-    notifyListeners();
-  }
-
-  set currentList(List<Bill> value) {
-    _currentList = value;
-    notifyListeners();
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(_bill.name),
+      leading: Container(
+        width: 24,
+        height: double.infinity,
+        alignment: Alignment.centerLeft,
+        child: Image.network(
+          gBaseUrl + _bill.billType.image,
+        ),
+      ),
+      onTap: () async {
+        dynamic res = await Navigator.pushNamed(context, "/bill_detail",
+            arguments: {kBillID: _bill.id}) as bool;
+        if (res != null && res && onUpdateSuccess != null) {
+          onUpdateSuccess();
+        }
+      },
+      subtitle: Text(DateFormat(gDateTimeFormatter)
+          .format(DateTime.tryParse(_bill.date).toLocal())),
+      trailing: Text(
+        "¥${double.tryParse(_bill.amount).toStringAsFixed(2)}",
+        style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+      ),
+    );
   }
 }

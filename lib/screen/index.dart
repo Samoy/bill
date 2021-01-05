@@ -34,7 +34,7 @@ class IndexPage extends StatefulWidget {
 class _IndexPageState extends State<IndexPage> {
   List<_BottomItem> _navItems = [
     _BottomItem("首页", Icon(Icons.home), HomePage()),
-    _BottomItem("趋势", Icon(Icons.bar_chart), TrendPage()),
+    _BottomItem("趋势", Icon(Icons.trending_up), TrendPage()),
     _BottomItem("我的", Icon(Icons.person), MinePage())
   ];
   int _selectItem = 0;

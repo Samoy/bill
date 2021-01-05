@@ -48,6 +48,7 @@ class BillDetail extends StatefulWidget {
 
 class _BillDetailState extends State<BillDetail> {
   bool _isEditing = false;
+  bool _success = false;
   final int _id;
   GlobalKey<FormState> _formKey = GlobalKey();
   List<_BillItem> _items = [
@@ -85,220 +86,230 @@ class _BillDetailState extends State<BillDetail> {
   @override
   Widget build(BuildContext context) {
     final requiredFields = ['名称', '金额', '类型', '日期', '时间'];
-    return BaseWidget(
-      title: "账单详情",
-      actions: [
-        IconButton(
-          icon: _isEditing ? Icon(Icons.check) : Icon(Icons.edit),
-          onPressed: () {
-            if (!_isEditing) {
-              setState(() {
-                _isEditing = true;
-              });
-            } else {
-              updateBill();
-              setState(() {
-                _isEditing = false;
-              });
-            }
-          },
-          tooltip: "修改",
-        )
-      ],
-      body: _bill == null
-          ? Center(
-              child: CircularProgressIndicator(),
+    return WillPopScope(
+        child: BaseWidget(
+          title: "账单详情",
+          actions: [
+            IconButton(
+              icon: _isEditing ? Icon(Icons.check) : Icon(Icons.edit),
+              onPressed: () {
+                if (!_isEditing) {
+                  setState(() {
+                    _isEditing = true;
+                  });
+                } else {
+                  updateBill();
+                  setState(() {
+                    _isEditing = false;
+                  });
+                }
+              },
+              tooltip: "修改",
             )
-          : SingleChildScrollView(
-              child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: _items.map((e) {
-                        return Container(
-                          margin: EdgeInsets.only(top: 12),
-                          child: TextFormField(
-                            controller: e.controller,
-                            validator: (value) {
-                              if (requiredFields.contains(e.title)) {
-                                if (value.isEmpty) {
-                                  return "${e.title}不能为空";
-                                }
-                              }
-                              if (e.title == '金额' &&
-                                  (!new RegExp(
-                                              r"^([1-9]\d{0,9}|0)(\.\d{1,2})?$")
-                                          .hasMatch(value) ||
-                                      double.tryParse(value) == null ||
-                                      double.tryParse(value) <= 0)) {
-                                return "不合法的金额";
-                              }
-                              return null;
-                            },
-                            keyboardType: e.inputType,
-                            decoration: InputDecoration(
-                                enabled: _isEditing,
-                                contentPadding: EdgeInsets.only(left: 8),
-                                prefixIconConstraints: BoxConstraints(
-                                  maxHeight: 20,
-                                  minWidth: 40,
-                                ),
-                                prefixIcon: Text("${e.title}:"),
-                                suffixText: e.title == '金额' ? "元" : null,
-                                suffixIcon: _isEditing
-                                    ? requiredFields.contains(e.title)
-                                        ? Container(
-                                            margin: EdgeInsets.only(left: 8),
-                                            child: Text(
-                                              "*",
-                                              style:
-                                                  TextStyle(color: Colors.red),
-                                            ),
-                                          )
-                                        : null
-                                    : null,
-                                suffixIconConstraints: BoxConstraints(
-                                    minWidth: 16, maxHeight: 10)),
-                            onTap: () async {
-                              switch (e.title) {
-                                case '日期':
-                                  DateTime result = await showDatePicker(
-                                      context: context,
-                                      initialDate: _selectedDate,
-                                      firstDate: DateTime(2000, 1, 1),
-                                      lastDate: DateTime.now());
-                                  if (result != null) {
-                                    e.controller.text =
-                                        DateFormat(gDateFormatter)
-                                            .format(result);
-                                    _selectedDate = result;
-                                    _param[e.key] =
-                                        "${DateFormat(gDateFormatter).format(result)} ${_selectedTime.format(context)}:00";
+          ],
+          body: _bill == null
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : SingleChildScrollView(
+                  child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: _items.map((e) {
+                            return Container(
+                              margin: EdgeInsets.only(top: 12),
+                              child: TextFormField(
+                                controller: e.controller,
+                                validator: (value) {
+                                  if (requiredFields.contains(e.title)) {
+                                    if (value.isEmpty) {
+                                      return "${e.title}不能为空";
+                                    }
                                   }
-                                  break;
-                                case '时间':
-                                  TimeOfDay result = await showTimePicker(
-                                      context: context,
-                                      initialTime: _selectedTime,
-                                      initialEntryMode:
-                                          TimePickerEntryMode.input,
-                                      builder:
-                                          (BuildContext context, Widget child) {
-                                        return MediaQuery(
-                                          data: MediaQuery.of(context).copyWith(
-                                              alwaysUse24HourFormat: true),
-                                          child: child,
-                                        );
-                                      });
-                                  if (result != null) {
-                                    e.controller.text = result.format(context);
-                                    _selectedTime = result;
-                                    _param["date"] =
-                                        "${DateFormat(gDateFormatter).format(_selectedDate)} ${result.format(context)}:00";
+                                  if (e.title == '金额' &&
+                                      (!new RegExp(
+                                                  r"^([1-9]\d{0,9}|0)(\.\d{1,2})?$")
+                                              .hasMatch(value) ||
+                                          double.tryParse(value) == null ||
+                                          double.tryParse(value) <= 0)) {
+                                    return "不合法的金额";
                                   }
-                                  break;
-                                case '类型':
-                                  bool result = await Navigator.pushNamed(
-                                      context, "/bill_type_list") as bool;
-                                  if (result != null && result) {
-                                    BillType billType =
-                                        Provider.of<BillTypeModel>(context,
-                                                listen: false)
-                                            .selectBillType;
-                                    e.controller.text = billType.name;
-                                    _param["type_id"] = billType.id;
-                                  }
-                                  break;
-                                default:
                                   return null;
-                              }
-                            },
-                            readOnly: e.title == '时间' ||
-                                e.title == '日期' ||
-                                e.title == '类型',
-                            onChanged: (value) {
-                              _param[e.key] = value;
-                            },
-                          ),
-                        );
-                      }).toList() +
-                      [
-                        Container(
-                          child: Row(
-                            children: [
-                              Flexible(
-                                child: Container(
-                                  margin: EdgeInsets.only(top: 16),
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(3)),
-                                      gradient: LinearGradient(colors: [
-                                        Colors.amberAccent,
-                                        Colors.amber,
-                                        Colors.orange
-                                      ])),
-                                  child: FlatButton(
-                                    textColor: Colors.white,
-                                    onPressed: _isEditing
-                                        ? () {
-                                            if (_formKey.currentState
-                                                .validate()) {
-                                              updateBill();
-                                            }
-                                          }
-                                        : null,
-                                    materialTapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
-                                    child: Text(
-                                      "修改",
-                                      style: TextStyle(fontSize: 14),
+                                },
+                                keyboardType: e.inputType,
+                                decoration: InputDecoration(
+                                    enabled: _isEditing,
+                                    contentPadding: EdgeInsets.only(left: 8),
+                                    prefixIconConstraints: BoxConstraints(
+                                      maxHeight: 20,
+                                      minWidth: 40,
                                     ),
-                                  ),
-                                ),
-                                flex: 1,
-                              ),
-                              SizedBox(
-                                width: 16,
-                              ),
-                              Flexible(
-                                child: Container(
-                                  margin: EdgeInsets.only(top: 16),
-                                  width: double.infinity,
-                                  child: OutlineButton(
-                                    textColor: Colors.grey[600],
-                                    borderSide: BorderSide(color: Colors.amber),
-                                    onPressed: _isEditing
-                                        ? () {
-                                            if (_isEditing) {
-                                              setState(() {
-                                                _isEditing = false;
-                                                //深复制，避免因修改_bill而_defaultBill也发生改变。
-                                                _bill = Bill.fromJson(
-                                                    _defaultBill.toJson());
-                                              });
-                                            }
-                                          }
+                                    prefixIcon: Text("${e.title}:"),
+                                    suffixText: e.title == '金额' ? "元" : null,
+                                    suffixIcon: _isEditing
+                                        ? requiredFields.contains(e.title)
+                                            ? Container(
+                                                margin:
+                                                    EdgeInsets.only(left: 8),
+                                                child: Text(
+                                                  "*",
+                                                  style: TextStyle(
+                                                      color: Colors.red),
+                                                ),
+                                              )
+                                            : null
                                         : null,
-                                    materialTapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
-                                    child: Text(
-                                      "取消",
-                                      style: TextStyle(fontSize: 14),
+                                    suffixIconConstraints: BoxConstraints(
+                                        minWidth: 16, maxHeight: 10)),
+                                onTap: () async {
+                                  switch (e.title) {
+                                    case '日期':
+                                      DateTime result = await showDatePicker(
+                                          context: context,
+                                          initialDate: _selectedDate,
+                                          firstDate: DateTime(2000, 1, 1),
+                                          lastDate: DateTime.now());
+                                      if (result != null) {
+                                        e.controller.text =
+                                            DateFormat(gDateFormatter)
+                                                .format(result);
+                                        _selectedDate = result;
+                                        _param[e.key] =
+                                            "${DateFormat(gDateFormatter).format(result)} ${_selectedTime.format(context)}:00";
+                                      }
+                                      break;
+                                    case '时间':
+                                      TimeOfDay result = await showTimePicker(
+                                          context: context,
+                                          initialTime: _selectedTime,
+                                          initialEntryMode:
+                                              TimePickerEntryMode.input,
+                                          builder: (BuildContext context,
+                                              Widget child) {
+                                            return MediaQuery(
+                                              data: MediaQuery.of(context)
+                                                  .copyWith(
+                                                      alwaysUse24HourFormat:
+                                                          true),
+                                              child: child,
+                                            );
+                                          });
+                                      if (result != null) {
+                                        e.controller.text =
+                                            result.format(context);
+                                        _selectedTime = result;
+                                        _param["date"] =
+                                            "${DateFormat(gDateFormatter).format(_selectedDate)} ${result.format(context)}:00";
+                                      }
+                                      break;
+                                    case '类型':
+                                      bool result = await Navigator.pushNamed(
+                                          context, "/bill_type_list") as bool;
+                                      if (result != null && result) {
+                                        BillType billType =
+                                            Provider.of<BillTypeModel>(context,
+                                                    listen: false)
+                                                .selectBillType;
+                                        e.controller.text = billType.name;
+                                        _param["type_id"] = billType.id;
+                                      }
+                                      break;
+                                    default:
+                                      return null;
+                                  }
+                                },
+                                readOnly: e.title == '时间' ||
+                                    e.title == '日期' ||
+                                    e.title == '类型',
+                                onChanged: (value) {
+                                  _param[e.key] = value;
+                                },
+                              ),
+                            );
+                          }).toList() +
+                          [
+                            Container(
+                              child: Row(
+                                children: [
+                                  Flexible(
+                                    child: Container(
+                                      margin: EdgeInsets.only(top: 16),
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(3)),
+                                          gradient: LinearGradient(colors: [
+                                            Colors.amberAccent,
+                                            Colors.amber,
+                                            Colors.orange
+                                          ])),
+                                      child: FlatButton(
+                                        textColor: Colors.white,
+                                        onPressed: _isEditing
+                                            ? () {
+                                                if (_formKey.currentState
+                                                    .validate()) {
+                                                  updateBill();
+                                                }
+                                              }
+                                            : null,
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        child: Text(
+                                          "修改",
+                                          style: TextStyle(fontSize: 14),
+                                        ),
+                                      ),
                                     ),
+                                    flex: 1,
                                   ),
-                                ),
-                                flex: 1,
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                ),
-              ),
-            )),
-    );
+                                  SizedBox(
+                                    width: 16,
+                                  ),
+                                  Flexible(
+                                    child: Container(
+                                      margin: EdgeInsets.only(top: 16),
+                                      width: double.infinity,
+                                      child: OutlineButton(
+                                        textColor: Colors.grey[600],
+                                        borderSide:
+                                            BorderSide(color: Colors.amber),
+                                        onPressed: _isEditing
+                                            ? () {
+                                                if (_isEditing) {
+                                                  setState(() {
+                                                    _isEditing = false;
+                                                    //深复制，避免因修改_bill而_defaultBill也发生改变。
+                                                    _bill = Bill.fromJson(
+                                                        _defaultBill.toJson());
+                                                  });
+                                                }
+                                              }
+                                            : null,
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        child: Text(
+                                          "取消",
+                                          style: TextStyle(fontSize: 14),
+                                        ),
+                                      ),
+                                    ),
+                                    flex: 1,
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                    ),
+                  ),
+                )),
+        ),
+        onWillPop: () async {
+          Navigator.pop(context, _success);
+          return _success;
+        });
   }
 
   Future fetchBillDetail() async {
@@ -357,6 +368,7 @@ class _BillDetailState extends State<BillDetail> {
       setState(() {
         _bill = updateBillBean.data;
         _isEditing = false;
+        _success = true;
       });
     }
   }
