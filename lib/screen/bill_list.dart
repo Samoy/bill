@@ -56,18 +56,20 @@ class _BillListPageState extends State<BillListPage> {
     setState(() {
       _isLoading = false;
     });
-    context.read<BillModel>().currentList = [];
+    context
+        .read<BillModel>()
+        .currentList = [];
     _page = 1;
     return fetchList();
   }
 
-  Future<void> loadMore() {
+  Future<void> loadMore() async {
+    _page++;
+    fetchList();
     setState(() {
       _isLoading = true;
       _hasMore = true;
     });
-    _page++;
-    return fetchList();
   }
 
   @override
@@ -77,31 +79,30 @@ class _BillListPageState extends State<BillListPage> {
       body: RefreshIndicator(
         child: Column(
           children: [
-            Container(
+            Flexible(
                 child: NotificationListener<ScrollNotification>(
-              onNotification: (t) {
-                if (!_isLoading &&
-                    t.metrics.pixels == t.metrics.maxScrollExtent) {
-                  _page++;
-                  loadMore();
-                }
-                return false;
-              },
-              child: Consumer<BillModel>(
-                builder: (context, billModel, child) {
-                  return ListView.builder(
-                      shrinkWrap: true,
-                      padding: EdgeInsets.zero,
-                      itemBuilder: (context, index) {
-                        return BillListItem(
-                          billModel.currentList[index],
-                          onUpdateSuccess: refresh,
-                        );
-                      },
-                      itemCount: billModel.currentList.length);
-                },
-              ),
-            )),
+                  onNotification: (t) {
+                    if (!_isLoading &&
+                        t.metrics.pixels == t.metrics.maxScrollExtent) {
+                      loadMore();
+                    }
+                    return false;
+                  },
+                  child: Consumer<BillModel>(
+                    builder: (context, billModel, child) {
+                      return ListView.builder(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.zero,
+                          itemBuilder: (context, index) {
+                            return BillListItem(
+                              billModel.currentList[index],
+                              onUpdateSuccess: refresh,
+                            );
+                          },
+                          itemCount: billModel.currentList.length);
+                    },
+                  ),
+                )),
             Container(
               alignment: Alignment.center,
               margin: EdgeInsets.symmetric(horizontal: 16),
@@ -134,7 +135,11 @@ class _BillListPageState extends State<BillListPage> {
         _hasMore = false;
       });
     }
-    Provider.of<BillModel>(context, listen: false).currentList =
-        context.read<BillModel>().currentList + bean.data;
+    Provider
+        .of<BillModel>(context, listen: false)
+        .currentList =
+        context
+            .read<BillModel>()
+            .currentList + bean.data;
   }
 }
